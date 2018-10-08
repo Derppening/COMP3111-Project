@@ -1,29 +1,29 @@
 package comp3111.webscraper;
 
-import java.net.URLEncoder;
-import java.util.List;
-
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+
+import java.net.URLEncoder;
+import java.util.List;
 import java.util.Vector;
 
 
 /**
- * WebScraper provide a sample code that scrape web content. After it is constructed, you can call the method scrape with a keyword, 
- * the client will go to the default url and parse the page by looking at the HTML DOM.  
+ * WebScraper provide a sample code that scrape web content. After it is constructed, you can call the method scrape with a keyword,
+ * the client will go to the default url and parse the page by looking at the HTML DOM.
  * <br/>
  * In this particular sample code, it access to craigslist.org. You can directly search on an entry by typing the URL
  * <br/>
  * https://newyork.craigslist.org/search/sss?sort=rel&amp;query=KEYWORD
- *  <br/>
+ * <br/>
  * where KEYWORD is the keyword you want to search.
  * <br/>
  * Assume you are working on Chrome, paste the url into your browser and press F12 to load the source code of the HTML. You might be freak
  * out if you have never seen a HTML source code before. Keep calm and move on. Press Ctrl-Shift-C (or CMD-Shift-C if you got a mac) and move your
  * mouse cursor around, different part of the HTML code and the corresponding the HTML objects will be highlighted. Explore your HTML page from
- * body &rarr; section class="page-container" &rarr; form id="searchform" &rarr; div class="content" &rarr; ul class="rows" &rarr; any one of the multiple 
+ * body &rarr; section class="page-container" &rarr; form id="searchform" &rarr; div class="content" &rarr; ul class="rows" &rarr; any one of the multiple
  * li class="result-row" &rarr; p class="result-info". You might see something like this:
  * <br/>
  * <pre>
@@ -50,74 +50,72 @@ import java.util.Vector;
  *           </a>
  *       </span>
  *   </p>
- *}
- *</pre>
+ * }
+ * </pre>
  * <br/>
- * The code 
+ * The code
  * <pre>
  * {@code
  * List<?> items = (List<?>) page.getByXPath("//li[@class='result-row']");
  * }
  * </pre>
- * extracts all result-row and stores the corresponding HTML elements to a list called items. Later in the loop it extracts the anchor tag 
- * &lsaquo; a &rsaquo; to retrieve the display text (by .asText()) and the link (by .getHrefAttribute()). It also extracts  
- * 
- *
+ * extracts all result-row and stores the corresponding HTML elements to a list called items. Later in the loop it extracts the anchor tag
+ * &lsaquo; a &rsaquo; to retrieve the display text (by .asText()) and the link (by .getHrefAttribute()). It also extracts
  */
 public class WebScraper {
 
-	private static final String DEFAULT_URL = "https://newyork.craigslist.org/";
-	private WebClient client;
+    private static final String DEFAULT_URL = "https://newyork.craigslist.org/";
+    private WebClient client;
 
-	/**
-	 * Default Constructor 
-	 */
-	public WebScraper() {
-		client = new WebClient();
-		client.getOptions().setCssEnabled(false);
-		client.getOptions().setJavaScriptEnabled(false);
-	}
+    /**
+     * Default Constructor
+     */
+    public WebScraper() {
+        client = new WebClient();
+        client.getOptions().setCssEnabled(false);
+        client.getOptions().setJavaScriptEnabled(false);
+    }
 
-	/**
-	 * The only method implemented in this class, to scrape web content from the craigslist
-	 * 
-	 * @param keyword - the keyword you want to search
-	 * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
-	 */
-	public List<Item> scrape(String keyword) {
+    /**
+     * The only method implemented in this class, to scrape web content from the craigslist
+     *
+     * @param keyword - the keyword you want to search
+     * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
+     */
+    public List<Item> scrape(String keyword) {
 
-		try {
-			String searchUrl = DEFAULT_URL + "search/sss?sort=rel&query=" + URLEncoder.encode(keyword, "UTF-8");
-			HtmlPage page = client.getPage(searchUrl);
+        try {
+            String searchUrl = DEFAULT_URL + "search/sss?sort=rel&query=" + URLEncoder.encode(keyword, "UTF-8");
+            HtmlPage page = client.getPage(searchUrl);
 
-			
-			List<?> items = (List<?>) page.getByXPath("//li[@class='result-row']");
-			
-			Vector<Item> result = new Vector<Item>();
 
-			for (int i = 0; i < items.size(); i++) {
-				HtmlElement htmlItem = (HtmlElement) items.get(i);
-				HtmlAnchor itemAnchor = ((HtmlAnchor) htmlItem.getFirstByXPath(".//p[@class='result-info']/a"));
-				HtmlElement spanPrice = ((HtmlElement) htmlItem.getFirstByXPath(".//a/span[@class='result-price']"));
+            List<?> items = (List<?>) page.getByXPath("//li[@class='result-row']");
 
-				// It is possible that an item doesn't have any price, we set the price to 0.0
-				// in this case
-				String itemPrice = spanPrice == null ? "0.0" : spanPrice.asText();
+            Vector<Item> result = new Vector<Item>();
 
-				Item item = new Item();
-				item.setTitle(itemAnchor.asText());
-				item.setUrl(DEFAULT_URL + itemAnchor.getHrefAttribute());
+            for (int i = 0; i < items.size(); i++) {
+                HtmlElement htmlItem = (HtmlElement) items.get(i);
+                HtmlAnchor itemAnchor = ((HtmlAnchor) htmlItem.getFirstByXPath(".//p[@class='result-info']/a"));
+                HtmlElement spanPrice = ((HtmlElement) htmlItem.getFirstByXPath(".//a/span[@class='result-price']"));
 
-				item.setPrice(new Double(itemPrice.replace("$", "")));
+                // It is possible that an item doesn't have any price, we set the price to 0.0
+                // in this case
+                String itemPrice = spanPrice == null ? "0.0" : spanPrice.asText();
 
-				result.add(item);
-			}
-			client.close();
-			return result;
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		return null;
-	}
+                Item item = new Item();
+                item.setTitle(itemAnchor.asText());
+                item.setUrl(DEFAULT_URL + itemAnchor.getHrefAttribute());
+
+                item.setPrice(new Double(itemPrice.replace("$", "")));
+
+                result.add(item);
+            }
+            client.close();
+            return result;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
 
 }
