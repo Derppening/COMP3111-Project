@@ -65,11 +65,16 @@ public class Controller {
     private void actionSearch() {
         System.out.println("actionSearch: " + textFieldKeyword.getText());
         List<Item> result = scraper.scrape(textFieldKeyword.getText());
-        String output = "";
+        StringBuilder output = new StringBuilder();
         for (Item item : result) {
-            output += item.getTitle() + "\t" + item.getPrice() + "\t" + item.getUrl() + "\n";
+            output.append(item.getTitle())
+                    .append("\t")
+                    .append(item.getPrice())
+                    .append("\t")
+                    .append(item.getUrl())
+                    .append("\n");
         }
-        textAreaConsole.setText(output);
+        textAreaConsole.setText(output.toString());
 
 
     }
