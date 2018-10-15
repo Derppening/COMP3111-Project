@@ -75,7 +75,7 @@ public class Controller {
                     .append("\n");
         }
         textAreaConsole.setText(output.toString());
-
+	labelCount.setText("Hi");
 
     }
 
