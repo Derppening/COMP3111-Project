@@ -75,8 +75,13 @@ public class Controller {
                     .append("\n");
         }
         textAreaConsole.setText(output.toString());
+<<<<<<< HEAD
 	labelCount.setText("Hi");
 
+=======
+
+        labelCount.setText("Hi");
+>>>>>>> fee3f88e64667afe4d440d7f6b9c90ce7af3fe86
     }
 
     /**
