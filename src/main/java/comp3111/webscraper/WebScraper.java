@@ -63,7 +63,7 @@ import java.util.Vector;
  * &lsaquo; a &rsaquo; to retrieve the display text (by .asText()) and the link (by .getHrefAttribute()). It also extracts
  */
 public class WebScraper {
-
+    private static final String NEW_URL = "https://www.amazon.com/";
     private static final String DEFAULT_URL = "https://newyork.craigslist.org/";
     private WebClient client;
 
@@ -83,36 +83,73 @@ public class WebScraper {
      * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
      */
     public List<Item> scrape(String keyword) {
+        return newScrape(keyword);
+//        try {
+//            String searchUrl = DEFAULT_URL + "search/sss?sort=rel&query=" + URLEncoder.encode(keyword, "UTF-8");
+//            HtmlPage page = client.getPage(searchUrl);
+//
+//
+//            List<?> items = page.getByXPath("//li[@class='result-row']");
+//
+//            Vector<Item> result = new Vector<>();
+//
+//            for (Object elem : items) {
+//                HtmlElement htmlItem = (HtmlElement) elem;
+//                HtmlAnchor itemAnchor = htmlItem.getFirstByXPath(".//p[@class='result-info']/a");
+//                HtmlElement spanPrice = htmlItem.getFirstByXPath(".//a/span[@class='result-price']");
+//
+//                // It is possible that an item doesn't have any price, we set the price to 0.0
+//                // in this case
+//                String itemPrice = spanPrice == null ? "0.0" : spanPrice.asText();
+//
+//                Item item = new Item();
+//                item.setTitle(itemAnchor.asText());
+//                item.setUrl(DEFAULT_URL + itemAnchor.getHrefAttribute());
+//
+//                item.setPrice(new Double(itemPrice.replace("$", "")));
+//
+//                result.add(item);
+//            }
+//            client.close();
+//            return result;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+    }
 
-        try {
-            String searchUrl = DEFAULT_URL + "search/sss?sort=rel&query=" + URLEncoder.encode(keyword, "UTF-8");
+    private List<Item> newScrape(String keyword){
+        try{
+            String searchUrl = NEW_URL + "s/ref=nb_sb_noss?url=bbn%3D230659011%26search-alias%3Daps&field-keywords=" + URLEncoder.encode(keyword, "UTF-8");
             HtmlPage page = client.getPage(searchUrl);
 
 
-            List<?> items = page.getByXPath("//li[@class='result-row']");
+            List<?> items = page.getByXPath("//li[@class='s-result-item']");
 
             Vector<Item> result = new Vector<>();
 
-            for (Object elem : items) {
-                HtmlElement htmlItem = (HtmlElement) elem;
-                HtmlAnchor itemAnchor = htmlItem.getFirstByXPath(".//p[@class='result-info']/a");
-                HtmlElement spanPrice = htmlItem.getFirstByXPath(".//a/span[@class='result-price']");
+            System.out.println(items.size());
 
-                // It is possible that an item doesn't have any price, we set the price to 0.0
-                // in this case
-                String itemPrice = spanPrice == null ? "0.0" : spanPrice.asText();
-
-                Item item = new Item();
-                item.setTitle(itemAnchor.asText());
-                item.setUrl(DEFAULT_URL + itemAnchor.getHrefAttribute());
-
-                item.setPrice(new Double(itemPrice.replace("$", "")));
-
-                result.add(item);
-            }
+//            for (Object elem : items) {
+//                HtmlElement htmlItem = (HtmlElement) elem;
+//                HtmlAnchor itemAnchor = htmlItem.getFirstByXPath(".//p[@class='result-info']/a");
+//                HtmlElement spanPrice = htmlItem.getFirstByXPath(".//span[@class='a-offscreen']");
+//
+//                // It is possible that an item doesn't have any price, we set the price to 0.0
+//                // in this case
+//                String itemPrice = spanPrice == null ? "0.0" : spanPrice.asText();
+//
+//                Item item = new Item();
+//                item.setTitle(itemAnchor.asText());
+//                item.setUrl(DEFAULT_URL + itemAnchor.getHrefAttribute());
+//
+//                item.setPrice(new Double(itemPrice.replace("$", "")));
+//
+//                result.add(item);
+//            }
             client.close();
             return result;
-        } catch (Exception e) {
+        }catch(Exception e){
             e.printStackTrace();
         }
         return null;
