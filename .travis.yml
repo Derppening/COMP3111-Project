@@ -7,5 +7,6 @@ jdk:
 
 script:
   - cd $TRAVIS_BUILD_DIR
+  - chmod +x ./gradlew
   - ./gradlew assemble
   - ./gradlew check
