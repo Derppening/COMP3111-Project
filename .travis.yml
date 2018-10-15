@@ -1,0 +1,15 @@
+dist: trusty
+
+language: java
+
+jdk:
+  - openjdk8
+
+branches:
+  only:
+    - feature/travis-ci
+
+script:
+  - cd $TRAVIS_BUILD_DIR
+  - ./gradlew assemble
+  - ./gradlew check
