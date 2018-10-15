@@ -89,14 +89,14 @@ public class WebScraper {
             HtmlPage page = client.getPage(searchUrl);
 
 
-            List<?> items = (List<?>) page.getByXPath("//li[@class='result-row']");
+            List<?> items = page.getByXPath("//li[@class='result-row']");
 
-            Vector<Item> result = new Vector<Item>();
+            Vector<Item> result = new Vector<>();
 
-            for (int i = 0; i < items.size(); i++) {
-                HtmlElement htmlItem = (HtmlElement) items.get(i);
-                HtmlAnchor itemAnchor = ((HtmlAnchor) htmlItem.getFirstByXPath(".//p[@class='result-info']/a"));
-                HtmlElement spanPrice = ((HtmlElement) htmlItem.getFirstByXPath(".//a/span[@class='result-price']"));
+            for (Object elem : items) {
+                HtmlElement htmlItem = (HtmlElement) elem;
+                HtmlAnchor itemAnchor = htmlItem.getFirstByXPath(".//p[@class='result-info']/a");
+                HtmlElement spanPrice = htmlItem.getFirstByXPath(".//a/span[@class='result-price']");
 
                 // It is possible that an item doesn't have any price, we set the price to 0.0
                 // in this case
@@ -113,7 +113,7 @@ public class WebScraper {
             client.close();
             return result;
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
         return null;
     }
