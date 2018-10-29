@@ -66,6 +66,7 @@ public class Controller {
         System.out.println("actionSearch: " + textFieldKeyword.getText());
         List<Item> result = scraper.scrape(textFieldKeyword.getText());
         StringBuilder output = new StringBuilder();
+        if(result == null)return;
         for (Item item : result) {
             output.append(item.getTitle())
                     .append("\t")

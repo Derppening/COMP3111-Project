@@ -5,10 +5,16 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
+import java.io.*;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Vector;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * WebScraper provide a sample code that scrape web content. After it is constructed, you can call the method scrape with a keyword,
@@ -83,76 +89,134 @@ public class WebScraper {
      * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
      */
     public List<Item> scrape(String keyword) {
+        if(keyword == "")return null;
+//        return oldScrape(keyword);
         return newScrape(keyword);
-//        try {
-//            String searchUrl = DEFAULT_URL + "search/sss?sort=rel&query=" + URLEncoder.encode(keyword, "UTF-8");
-//            HtmlPage page = client.getPage(searchUrl);
-//
-//
-//            List<?> items = page.getByXPath("//li[@class='result-row']");
-//
-//            Vector<Item> result = new Vector<>();
-//
-//            for (Object elem : items) {
-//                HtmlElement htmlItem = (HtmlElement) elem;
-//                HtmlAnchor itemAnchor = htmlItem.getFirstByXPath(".//p[@class='result-info']/a");
-//                HtmlElement spanPrice = htmlItem.getFirstByXPath(".//a/span[@class='result-price']");
-//
-//                // It is possible that an item doesn't have any price, we set the price to 0.0
-//                // in this case
-//                String itemPrice = spanPrice == null ? "0.0" : spanPrice.asText();
-//
-//                Item item = new Item();
-//                item.setTitle(itemAnchor.asText());
-//                item.setUrl(DEFAULT_URL + itemAnchor.getHrefAttribute());
-//
-//                item.setPrice(new Double(itemPrice.replace("$", "")));
-//
-//                result.add(item);
-//            }
-//            client.close();
-//            return result;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
     }
 
-    private List<Item> newScrape(String keyword){
-        try{
-            String searchUrl = NEW_URL + "s/ref=nb_sb_noss?url=bbn%3D230659011%26search-alias%3Daps&field-keywords=" + URLEncoder.encode(keyword, "UTF-8");
+    /**
+     * Perform all tasks including pagination on old site
+     * @param keyword - the keyword you want to search
+     * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
+     */
+    private List<Item> oldScrape(String keyword){
+        try {
+            return oldScrapeByUrl(obtainOldScrapeUrl(keyword));
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+    }
+
+    /**
+     * obtain a url for scrapping
+     * @param keyword
+     * @return url for scrapping
+     */
+    private String obtainOldScrapeUrl(String keyword) throws UnsupportedEncodingException {
+        return DEFAULT_URL + "search/sss?sort=rel&query=" + URLEncoder.encode(keyword, "UTF-8");
+    }
+
+    /**
+     * Scrape the given site
+     * @param searchUrl
+     * @return
+     */
+    private List<Item> oldScrapeByUrl(String searchUrl){
+        try {
             HtmlPage page = client.getPage(searchUrl);
 
-
-            List<?> items = page.getByXPath("//li[@class='s-result-item']");
+            List<?> items = page.getByXPath("//li[@class='result-row']");
 
             Vector<Item> result = new Vector<>();
 
-            System.out.println(items.size());
+            for (Object elem : items) {
+                HtmlElement htmlItem = (HtmlElement) elem;
+                HtmlAnchor itemAnchor = htmlItem.getFirstByXPath(".//p[@class='result-info']/a");
+                HtmlElement spanPrice = htmlItem.getFirstByXPath(".//a/span[@class='result-price']");
 
-//            for (Object elem : items) {
-//                HtmlElement htmlItem = (HtmlElement) elem;
-//                HtmlAnchor itemAnchor = htmlItem.getFirstByXPath(".//p[@class='result-info']/a");
-//                HtmlElement spanPrice = htmlItem.getFirstByXPath(".//span[@class='a-offscreen']");
-//
-//                // It is possible that an item doesn't have any price, we set the price to 0.0
-//                // in this case
-//                String itemPrice = spanPrice == null ? "0.0" : spanPrice.asText();
-//
-//                Item item = new Item();
-//                item.setTitle(itemAnchor.asText());
-//                item.setUrl(DEFAULT_URL + itemAnchor.getHrefAttribute());
-//
-//                item.setPrice(new Double(itemPrice.replace("$", "")));
-//
-//                result.add(item);
-//            }
+                // It is possible that an item doesn't have any price, we set the price to 0.0
+                // in this case
+                String itemPrice = spanPrice == null ? "0.0" : spanPrice.asText();
+
+                Item item = new Item();
+                item.setTitle(itemAnchor.asText());
+                item.setUrl(DEFAULT_URL + itemAnchor.getHrefAttribute());
+
+                item.setPrice(new Double(itemPrice.replace("$", "")));
+
+                result.add(item);
+            }
             client.close();
             return result;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
+    /**
+     * Perform all tasks including pagination on new site
+     * @param keyword - the keyword you want to search
+     * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
+     */
+    private List<Item> newScrape(String keyword){
+        try {
+            return newScrapeByUrl(obtainNewScrapeUrl(keyword));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    private String obtainNewScrapeUrl(String keyword) throws UnsupportedEncodingException {
+        return "http://api.walmartlabs.com/v1/search?apiKey=knd7pc96vzfvzjb7h6ywz74x&query="+ URLEncoder.encode(keyword, "UTF-8");
+    }
+
+    private List<Item> newScrapeByUrl(String url){
+        try{
+            Vector<Item> result = new Vector<>();
+            JSONObject object = readJsonFromUrl(url);
+            int length = object.optInt("numItems");
+            if(length == 0){
+                return result;
+            }else{
+                JSONArray rawItems = (JSONArray) object.get("items");
+                for(int i=0; i<length; i++){
+                    JSONObject rawItem = (JSONObject) rawItems.get(i);
+                    Item item = new Item();
+                    item.setTitle(rawItem.optString("name"));
+                    item.setPrice(rawItem.optDouble("salePrice"));
+                    item.setUrl(rawItem.optString("addToCartUrl"));
+                    result.add(item);
+                }
+                return result;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    private static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
+        }
+        return sb.toString();
+    }
+
+    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+        InputStream is = new URL(url).openStream();
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            String jsonText = readAll(rd);
+            JSONObject json = new JSONObject(jsonText);
+            return json;
+        } finally {
+            is.close();
+        }
+    }
 }
