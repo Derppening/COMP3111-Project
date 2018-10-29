@@ -18,7 +18,7 @@
                         <!-- I did not associate function to most of the buttons (except the button New and Go). Go ahead and edit if you need it -->
                         <MenuItem mnemonicParsing="false" onAction="#actionNew"
                             text="New (call Controller.actionNew())" />
-                        <MenuItem mnemonicParsing="false" text="Open" />
+                        <MenuItem mnemonicParsing="false" text="Open" onAction="#actionOpen"/>
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" text="Close" />
                         <MenuItem mnemonicParsing="false" text="Save" onAction="#actionSave"/>

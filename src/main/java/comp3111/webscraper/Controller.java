@@ -20,8 +20,9 @@ import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
 import javafx.event.ActionEvent;
-import java.io.File;
-import java.io.FileOutputStream;
+
+import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -83,12 +84,36 @@ public class Controller {
     @FXML
     private void actionSearch() {
         System.out.println("actionSearch: " + textFieldKeyword.getText());
-        List<Item> result = scraper.scrape(textFieldKeyword.getText());
-        activeSearchResult = result;
+        activeSearchResult = scraper.scrape(textFieldKeyword.getText());
         activeSearchKeyword = textFieldKeyword.getText();
+        clearConsole();
+        printActiveSearchResult();
+        labelCount.setText("Hi");
+    }
+
+    /**
+     * clear console
+     */
+    private void clearConsole(){
+        textAreaConsole.setText("");
+    }
+
+    /**
+     * append the str to console
+     * @param str the appended string
+     */
+    private void printConsole(String str){
+        textAreaConsole.appendText(str);
+    }
+
+    /**
+     * print out the most result/ loaded search result
+     */
+    private void printActiveSearchResult(){
         StringBuilder output = new StringBuilder();
-        if(result == null)return;
-        for (Item item : result) {
+        if(activeSearchResult == null)return;
+        output.append(textAreaConsole.getText());
+        for (Item item : activeSearchResult) {
             output.append(item.getTitle())
                     .append("\t")
                     .append(item.getPrice())
@@ -99,8 +124,6 @@ public class Controller {
                     .append("\n");
         }
         textAreaConsole.setText(output.toString());
-
-        labelCount.setText("Hi");
     }
 
     /**
@@ -115,7 +138,7 @@ public class Controller {
      * Called when going to save
      */
     @FXML
-    private void actionSave(ActionEvent event){
+    private void actionSave(){
         JSONArray activeSearchResultArray = new JSONArray(activeSearchResult);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("keyword",activeSearchKeyword);
@@ -143,7 +166,60 @@ public class Controller {
                 System.out.println(e.getMessage());
             }
         }
+    }
 
+    /**
+     * Called when going to save
+     */
+    @FXML
+    private void actionOpen(){
+        Window stage = root.getScene().getWindow();
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Search");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Webscrapper File(*.3111)", "*.3111"));
+        File file = fileChooser.showOpenDialog(stage);
+        if (file != null) {
+            try {
+                if(!file.getName().contains(".")) {
+                    file = new File(file.getAbsolutePath() + ".3111");
+                }
+                String inputJson = readFile(file);
+                JSONObject inputObject = new JSONObject(inputJson);
+                activeSearchKeyword = inputObject.optString("keyword");
+                JSONArray result = (JSONArray) inputObject.get("result");
+                activeSearchResult = new ArrayList<>();
+                for(int i=0 ;i<result.length();i++){
+                    activeSearchResult.add(new Item(result.getJSONObject(i)));
+                }
+                clearConsole();
+                printConsole("--Data Loading from "+file.getAbsolutePath()+"--\n");
+                printActiveSearchResult();
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+    }
+
+    /**
+     * Read file into string
+     * @param   file file to read
+     * @return  string in file
+     * @throws IOException
+     */
+    private String readFile(File file) throws IOException {
+        FileInputStream inputStream = new FileInputStream(file);
+        String str = "";
+        byte buf[] = new byte[8];
+        int bufSize;
+        while (inputStream.available() > 0){
+            bufSize = inputStream.read(buf);
+            str+=(new String(buf, 0, bufSize));
+        }
+        inputStream.close();
+        return str;
     }
 }
 

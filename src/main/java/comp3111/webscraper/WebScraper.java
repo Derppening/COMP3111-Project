@@ -92,12 +92,16 @@ public class WebScraper {
     public List<Item> scrape(String keyword) {
         List<Item> result = new Vector<>();
         if (keyword == "") return result;
-        result.addAll(oldScrape(keyword));
+//        result.addAll(oldScrape(keyword));
         result.addAll(newScrape(keyword));
         Collections.sort(result, getItemComparator());
         return result;
     }
 
+    /**
+     * Obtain the comparator for sorting item
+     * @return the corresponding comparator to sort in ascending order
+     */
     private Comparator<Item> getItemComparator() {
         return new Comparator<Item>() {
             @Override
@@ -126,7 +130,7 @@ public class WebScraper {
     /**
      * obtain a url for scrapping
      *
-     * @param keyword
+     * @param keyword keyword for search
      * @return url for scrapping
      */
     private String obtainOldScrapeUrl(String keyword) throws UnsupportedEncodingException {
@@ -134,10 +138,10 @@ public class WebScraper {
     }
 
     /**
-     * Scrape the given site
+     * Scrape the old site
      *
-     * @param searchUrl
-     * @return
+     * @param searchUrl in the old site
+     * @return  the list of items scrapped
      */
     private List<Item> oldScrapeByUrl(String searchUrl) {
         try {
@@ -188,11 +192,21 @@ public class WebScraper {
         }
     }
 
-
+    /**
+     * get a new site search url
+     * @param keyword query string
+     * @return  a url in new site for scrapping
+     * @throws UnsupportedEncodingException
+     */
     private String obtainNewScrapeUrl(String keyword) throws UnsupportedEncodingException {
         return "http://api.walmartlabs.com/v1/search?apiKey=knd7pc96vzfvzjb7h6ywz74x&query=" + URLEncoder.encode(keyword, "UTF-8");
     }
 
+    /**
+     * perform the scrapping task in new site
+     * @param url scrapping url in new site, actually is the api endpoint
+     * @return  the list of item obtained
+     */
     private List<Item> newScrapeByUrl(String url) {
         try {
             Vector<Item> result = new Vector<>();
@@ -220,6 +234,12 @@ public class WebScraper {
     }
 
 
+    /**
+     * read the string in string reader
+     * @param rd reader that holds the string
+     * @return  extract string from read
+     * @throws IOException
+     */
     private static String readAll(Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
         int cp;
@@ -229,6 +249,13 @@ public class WebScraper {
         return sb.toString();
     }
 
+    /**
+     * convert json from url into jsonobject
+     * @param url where the json stored
+     * @return  the corresponding object represented by the json at the url
+     * @throws IOException
+     * @throws JSONException
+     */
     public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
         InputStream is = new URL(url).openStream();
         try {
