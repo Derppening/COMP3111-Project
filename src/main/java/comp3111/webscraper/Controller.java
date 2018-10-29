@@ -118,10 +118,11 @@ public class Controller {
     private void actionSave(ActionEvent event){
         JSONArray activeSearchResultArray = new JSONArray(activeSearchResult);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.accumulate("keyword",activeSearchKeyword);
-        jsonObject.accumulate("result",activeSearchResultArray);
+        jsonObject.put("keyword",activeSearchKeyword);
+        jsonObject.put("result",activeSearchResultArray);
         String outputJson = jsonObject.toString();
-        System.out.println(outputJson);
+//        System.out.println(activeSearchResultArray.toString());
+//        System.out.println(outputJson);
 
         Window stage = root.getScene().getWindow();
 
