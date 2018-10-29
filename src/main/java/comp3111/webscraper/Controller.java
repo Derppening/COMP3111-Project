@@ -6,17 +6,22 @@ package comp3111.webscraper;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
+import javafx.event.ActionEvent;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 
 
@@ -47,6 +52,9 @@ public class Controller {
 
     @FXML
     private TextArea textAreaConsole;
+
+    @FXML
+    private VBox root;
 
     private WebScraper scraper;
 
@@ -107,7 +115,7 @@ public class Controller {
      * Called when going to save
      */
     @FXML
-    private void actionSave(){
+    private void actionSave(ActionEvent event){
         JSONArray activeSearchResultArray = new JSONArray(activeSearchResult);
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("keyword",activeSearchKeyword);
@@ -115,17 +123,25 @@ public class Controller {
         String outputJson = jsonObject.toString();
         System.out.println(outputJson);
 
-//        FileChooser fileChooser = new FileChooser();
-//        fileChooser.setTitle("Save Image");
-//        File file = fileChooser.showSaveDialog();
-//        if (file != null) {
-//            try {
-//                ImageIO.write(SwingFXUtils.fromFXImage(pic.getImage(),
-//                        null), "png", file);
-//            } catch (IOException ex) {
-//                System.out.println(ex.getMessage());
-//            }
-//        }
+        Window stage = root.getScene().getWindow();
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Search");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Webscrapper File(*.3111)", "*.3111"));
+        File file = fileChooser.showSaveDialog(stage);
+        if (file != null) {
+            try {
+                if(!file.getName().contains(".")) {
+                    file = new File(file.getAbsolutePath() + ".3111");
+                }
+                FileOutputStream fooStream = new FileOutputStream(file, false);
+                fooStream.write(outputJson.getBytes());
+                fooStream.close();
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
 
     }
 }
