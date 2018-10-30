@@ -2,6 +2,7 @@ package comp3111.webscraper.models;
 
 import comp3111.webscraper.Item;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.List;
@@ -91,5 +92,16 @@ public class SearchRecord {
         SearchRecord ret = lastSearch.pop();
         lastSearch.push(top);
         return ret;
+    }
+
+    /**
+     * Peeks at the topmost element of the search history.
+     *
+     * This is useful when the current search is required for this operation.
+     *
+     * @return Most recent/current record of the search history.
+     */
+    public static @Nullable SearchRecord peek() {
+        return lastSearch.peek();
     }
 }
