@@ -1,27 +1,27 @@
-/**
- *
- */
 package comp3111.webscraper;
 
 
+import comp3111.webscraper.controllers.MenuController;
+import comp3111.webscraper.models.SearchRecord;
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 
 /**
- *
  * @author kevinw
- *
- *
+ * <p>
+ * <p>
  * Controller class that manage GUI interaction. Please see document about JavaFX for details.
- *
  */
 public class Controller {
+
+    @FXML
+    private MenuItem itemLastSearch;
 
     @FXML
     private Label labelCount;
@@ -42,6 +42,7 @@ public class Controller {
     private TextArea textAreaConsole;
 
     private WebScraper scraper;
+    private Application hostApplication = null;
 
     /**
      * Default controller
@@ -51,11 +52,53 @@ public class Controller {
     }
 
     /**
-     * Default initializer. It is empty.
+     * Sets the reference of the host application.
+     *
+     * @param app Current instance of {@link javafx.application.Application}.
+     */
+    void setHostApplication(@NotNull Application app) {
+        this.hostApplication = app;
+    }
+
+    /**
+     * Default initializer.
      */
     @FXML
     private void initialize() {
+        if (SearchRecord.canLoad()) {
+            itemLastSearch.setDisable(false);
+        }
+    }
 
+    /**
+     * Invoked when the "About the Team" menu item is clicked.
+     */
+    @FXML
+    private void actionDisplayTeamInfo() {
+        MenuController.displayTeamInfo();
+    }
+
+    /**
+     * Invoked when "Close" menu item is clicked.
+     *
+     * @throws Exception If re-initialization of primary stage fails.
+     */
+    @FXML
+    private void actionClose() throws Exception {
+        if (hostApplication instanceof WebScraperApplication) {
+            WebScraperApplication application = (WebScraperApplication) hostApplication;
+            application.setupPrimaryStage();
+        } else {
+            throw new IllegalStateException("Application is not an instance of WebScraper");
+        }
+    }
+
+    /**
+     * Invoked when "Quit" menu item is clicked.
+     */
+    @FXML
+    private void actionQuit() {
+        Platform.exit();
     }
 
     /**
@@ -64,9 +107,24 @@ public class Controller {
     @FXML
     private void actionSearch() {
         System.out.println("actionSearch: " + textFieldKeyword.getText());
+
         List<Item> result = scraper.scrape(textFieldKeyword.getText());
+        SearchRecord.push(textFieldKeyword.getText(), result);
+
+        textAreaConsole.setText(serializeItems(result));
+
+        itemLastSearch.setDisable(false);
+    }
+
+    /**
+     * Serializes a list of items to text in the format of "$title\t$price\t$url"
+     *
+     * @param items List of items to serialize.
+     * @return Serialized items.
+     */
+    private String serializeItems(List<Item> items) {
         StringBuilder output = new StringBuilder();
-        for (Item item : result) {
+        for (Item item : items) {
             output.append(item.getTitle())
                     .append("\t")
                     .append(item.getPrice())
@@ -74,17 +132,26 @@ public class Controller {
                     .append(item.getUrl())
                     .append("\n");
         }
-        textAreaConsole.setText(output.toString());
-
-        labelCount.setText("Hi");
+        return output.toString();
     }
 
     /**
-     * Called when the new button is pressed. Very dummy action - print something in the command prompt.
+     * Called when "Last Search" menu item is clicked.
      */
     @FXML
-    private void actionNew() {
-        System.out.println("actionNew");
+    private void actionLastSearch() {
+        if (!SearchRecord.canLoad()) {
+            throw new IllegalStateException("actionLastSearch should not be invokable");
+        }
+
+        SearchRecord lastSearch = SearchRecord.pop();
+        itemLastSearch.setDisable(true);
+        textFieldKeyword.setText(lastSearch.getKeyword());
+        textAreaConsole.setText(serializeItems(lastSearch.getItems()));
+
+        System.out.println("Loaded query \"" + lastSearch.getKeyword() + "\" from " + lastSearch.getTimeSaved().toString());
+
+        // TODO(Derppening): Invoke other functions to restore other tabs
     }
 }
 
