@@ -98,7 +98,7 @@ public class ControllerTest extends ApplicationTest {
         push(KeyCode.T);
         push(KeyCode.QUOTEDBL);
         push(KeyCode.ENTER);
-        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+        WaitForAsyncUtils.sleep(4, TimeUnit.SECONDS);
         assertEquals(original,new JSONArray(controller.testPeekSearchResult()).toString());
     }
 }
