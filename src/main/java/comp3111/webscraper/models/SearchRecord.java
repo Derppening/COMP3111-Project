@@ -26,7 +26,7 @@ public class SearchRecord {
      * @param keyword Keyword for the query.
      * @param items Items returned by the query.
      */
-    private SearchRecord(String keyword, List<Item> items) {
+    private SearchRecord(@NotNull String keyword, @NotNull List<Item> items) {
         this.keyword = keyword;
         this.items = items;
         this.timeSaved = Instant.now();
