@@ -80,17 +80,10 @@ public class Controller {
 
     /**
      * Invoked when "Close" menu item is clicked.
-     *
-     * @throws Exception If re-initialization of primary stage fails.
      */
     @FXML
-    private void actionClose() throws Exception {
-        if (hostApplication instanceof WebScraperApplication) {
-            WebScraperApplication application = (WebScraperApplication) hostApplication;
-            application.setupPrimaryStage();
-        } else {
-            throw new IllegalStateException("Application is not an instance of WebScraper");
-        }
+    private void actionClose() {
+        MenuController.closeSearch((WebScraperApplication) hostApplication);
     }
 
     /**
@@ -118,25 +111,6 @@ public class Controller {
     }
 
     /**
-     * Serializes a list of items to text in the format of "$title\t$price\t$url"
-     *
-     * @param items List of items to serialize.
-     * @return Serialized items.
-     */
-    private String serializeItems(List<Item> items) {
-        StringBuilder output = new StringBuilder();
-        for (Item item : items) {
-            output.append(item.getTitle())
-                    .append("\t")
-                    .append(item.getPrice())
-                    .append("\t")
-                    .append(item.getUrl())
-                    .append("\n");
-        }
-        return output.toString();
-    }
-
-    /**
      * Called when "Last Search" menu item is clicked.
      */
     @FXML
@@ -153,6 +127,25 @@ public class Controller {
         System.out.println("Loaded query \"" + lastSearch.getKeyword() + "\" from " + lastSearch.getTimeSaved().toString());
 
         // TODO(Derppening): Invoke other functions to restore other tabs
+    }
+
+    /**
+     * Serializes a list of items to text for displaying in the {@link Controller#textAreaConsole}.
+     *
+     * @param items List of items to serialize.
+     * @return Items serialized in the format "$title\t$price\t$url".
+     */
+    private String serializeItems(List<Item> items) {
+        StringBuilder output = new StringBuilder();
+        for (Item item : items) {
+            output.append(item.getTitle())
+                    .append("\t")
+                    .append(item.getPrice())
+                    .append("\t")
+                    .append(item.getUrl())
+                    .append("\n");
+        }
+        return output.toString();
     }
 }
 

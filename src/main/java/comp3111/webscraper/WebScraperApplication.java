@@ -59,14 +59,15 @@ public class WebScraperApplication extends Application {
         setupPrimaryStage();
     }
 
-    void setupPrimaryStage() throws Exception {
+    public void setupPrimaryStage() throws Exception {
         if (primaryStage == null) {
-            throw new IllegalStateException("Primary Stage reference is null!");
+            throw new IllegalStateException("Primary Stage does not exist!");
         }
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource(UI_FILE));
         VBox root = loader.load();
+
         Controller controller = loader.getController();
         controller.setHostApplication(this);
 

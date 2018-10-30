@@ -1,6 +1,8 @@
 package comp3111.webscraper.controllers;
 
+import comp3111.webscraper.WebScraperApplication;
 import comp3111.webscraper.models.TeamMemberInfo;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -32,5 +34,20 @@ public class MenuController {
         Stage stage = new Stage();
         stage.setScene(scene);
         stage.show();
+    }
+
+    /**
+     * Closes the current search by resetting the whole JavaFX stage.
+     *
+     * @param app Reference to the main JavaFX Application.
+     */
+    public static void closeSearch(WebScraperApplication app) {
+        try {
+            app.setupPrimaryStage();
+        } catch (Exception e) {
+            System.err.println("Unable to re-initialize JavaFX Stage!");
+            e.printStackTrace();
+            Platform.exit();
+        }
     }
 }
