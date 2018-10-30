@@ -153,6 +153,7 @@ public class Controller {
         Window stage = root.getScene().getWindow();
 
         FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new java.io.File("."));
         fileChooser.setTitle("Save Search");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Webscrapper File(*.3111)", "*.3111"));
         File file = fileChooser.showSaveDialog(stage);
@@ -160,6 +161,7 @@ public class Controller {
             try {
                 if(!file.getName().contains(".")) {
                     file = new File(file.getAbsolutePath() + ".3111");
+                    System.out.println("add .3111 triggered");
                 }
                 FileOutputStream fooStream = new FileOutputStream(file, false);
                 fooStream.write(outputJson.getBytes());
@@ -179,6 +181,7 @@ public class Controller {
         Window stage = root.getScene().getWindow();
 
         FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new java.io.File("."));
         fileChooser.setTitle("Open Search");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Webscrapper File(*.3111)", "*.3111"));
         File file = fileChooser.showOpenDialog(stage);
@@ -193,6 +196,7 @@ public class Controller {
                 JSONArray result = (JSONArray) inputObject.get("result");
                 activeSearchResult = new ArrayList<>();
                 for(int i=0 ;i<result.length();i++){
+//                    activeSearchResult.add((Item)result.get(i));
                     activeSearchResult.add(new Item(result.getJSONObject(i)));
                 }
                 clearConsole();
@@ -226,14 +230,29 @@ public class Controller {
     }
 
     /**
-     * For testing basic 2
-     * @param keyword search keyword
+     * For testing advance 2, create some result
      * @return the new search result
      */
-    public List<Item> testScrape(String keyword){
-        textFieldKeyword.setText(keyword);
-        actionSearch();
+    public List<Item> testGenerateDummieResult(){
+        activeSearchResult = new ArrayList<>();
+        for(int i=0; i<10; i++){
+            Item item = new Item();
+            item.setPortal("some portal");
+            item.setPrice(i);
+            item.setTitle("item"+i);
+            item.setUrl("http://some.link");
+            activeSearchResult.add(item);
+        }
+        activeSearchKeyword = "testing";
         return activeSearchResult;
+    }
+
+    /**
+     * For testing advance2, make the active search empty
+     */
+    public void testClearActiveResult(){
+        activeSearchResult = new ArrayList<>();
+        activeSearchKeyword = "";
     }
 
     /**

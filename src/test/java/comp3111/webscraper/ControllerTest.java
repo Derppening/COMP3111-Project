@@ -6,13 +6,16 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 
-import javax.swing.text.FlowView;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -26,6 +29,7 @@ public class ControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws IOException {
+        System.out.println("start controller test");
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource(UI_FILE));
         root = loader.load();
@@ -42,6 +46,7 @@ public class ControllerTest extends ApplicationTest {
 
     @Test
     public void testSearch(){
+        System.out.println("testSearch");
         clickOn("#textFieldKeyword");
         write("iphone");
         clickOn("#buttonGo");
@@ -54,5 +59,46 @@ public class ControllerTest extends ApplicationTest {
 
     }
 
+    @Test
+    public void testSaveLoad(){
+        System.out.println("test: save load");
+        File file = new File("t.3111");
+        if(file.delete()){
+            System.out.println("deleted t.3111");
+        }else System.out.println("delete t.3111 fail");
+        controller.testGenerateDummieResult();
+        String original = new JSONArray(controller.testPeekSearchResult()).toString();
+        clickOn("#menuFile");
+        clickOn("#labelSave");
+//        WaitForAsyncUtils.waitForFxEvents();
+        push(KeyCode.ASTERISK);
+        push(KeyCode.DECIMAL);
+        push(KeyCode.ASTERISK);
+        push(KeyCode.ENTER);
+        push(KeyCode.BACK_SPACE);
+        push(KeyCode.BACK_SPACE);
+        push(KeyCode.BACK_SPACE);
+        push(KeyCode.QUOTEDBL);
+        push(KeyCode.T);
+        push(KeyCode.QUOTEDBL);
+        push(KeyCode.ENTER);
 
+        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+        controller.testClearActiveResult();
+        clickOn("#menuFile");
+        clickOn("#labelOpen");
+        push(KeyCode.ASTERISK);
+        push(KeyCode.DECIMAL);
+        push(KeyCode.ASTERISK);
+        push(KeyCode.ENTER);
+        push(KeyCode.BACK_SPACE);
+        push(KeyCode.BACK_SPACE);
+        push(KeyCode.BACK_SPACE);
+        push(KeyCode.QUOTEDBL);
+        push(KeyCode.T);
+        push(KeyCode.QUOTEDBL);
+        push(KeyCode.ENTER);
+        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
+        assertEquals(original,new JSONArray(controller.testPeekSearchResult()).toString());
+    }
 }
