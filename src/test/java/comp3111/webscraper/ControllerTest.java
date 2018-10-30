@@ -63,7 +63,7 @@ public class ControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void testSaveLoad(){
+    public void testSaveLoad() throws IOException {
         System.out.println("test: save load");
         File file = new File("t.3111");
         if(file.delete()){
@@ -86,6 +86,9 @@ public class ControllerTest extends ApplicationTest {
         push(KeyCode.QUOTEDBL);
         push(KeyCode.ENTER);
 
+        File realfile = new File("r.3111");
+        controller.saveFile(realfile);
+
         WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
         controller.testClearActiveResult();
         clickOn("#menuFile");
@@ -93,7 +96,9 @@ public class ControllerTest extends ApplicationTest {
         push(KeyCode.T);
         push(KeyCode.ENTER);
         WaitForAsyncUtils.sleep(4, TimeUnit.SECONDS);
-//        assertNotNull(controller.testPeekSearchResult());
+        assertNotNull(controller.testPeekSearchResult());
+
+        controller.openFile(realfile);
         String load = new JSONArray(controller.testPeekSearchResult()).toString();
         System.out.println(original);
         System.out.println(load);

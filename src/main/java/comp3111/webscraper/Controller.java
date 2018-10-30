@@ -142,11 +142,6 @@ public class Controller {
      */
     @FXML
     private void actionSave(){
-        JSONArray activeSearchResultArray = new JSONArray(activeSearchResult);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("keyword",activeSearchKeyword);
-        jsonObject.put("result",activeSearchResultArray);
-        String outputJson = jsonObject.toString();
 //        System.out.println(activeSearchResultArray.toString());
 //        System.out.println(outputJson);
 
@@ -158,17 +153,31 @@ public class Controller {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Webscrapper File(*.3111)", "*.3111"));
         File file = fileChooser.showSaveDialog(stage);
         try {
-            if(!file.getName().contains(".")) {
-                file = new File(file.getAbsolutePath() + ".3111");
-                System.out.println("add .3111 triggered");
-            }
-            FileOutputStream fooStream = new FileOutputStream(file, false);
-            fooStream.write(outputJson.getBytes());
-            fooStream.close();
-
+            saveFile(file);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    /**
+     * Advance2 save the search record
+     * @param file .3111 file target to save to
+     * @throws IOException
+     */
+    public void saveFile(File file) throws IOException {
+        JSONArray activeSearchResultArray = new JSONArray(activeSearchResult);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("keyword",activeSearchKeyword);
+        jsonObject.put("result",activeSearchResultArray);
+        String outputJson = jsonObject.toString();
+
+        if(!file.getName().contains(".")) {
+            file = new File(file.getAbsolutePath() + ".3111");
+            System.out.println("add .3111 triggered");
+        }
+        FileOutputStream fooStream = new FileOutputStream(file, false);
+        fooStream.write(outputJson.getBytes());
+        fooStream.close();
     }
 
     /**
@@ -184,23 +193,30 @@ public class Controller {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Webscrapper File(*.3111)", "*.3111"));
         File file = fileChooser.showOpenDialog(stage);
         try {
-            String inputJson = readFile(file);
-            JSONObject inputObject = new JSONObject(inputJson);
-            activeSearchKeyword = inputObject.optString("keyword");
-            JSONArray result = (JSONArray) inputObject.get("result");
-            activeSearchResult = new ArrayList<>();
-            for(int i=0 ;i<result.length();i++){
-//                    activeSearchResult.add((Item)result.get(i));
-                activeSearchResult.add(new Item(result.getJSONObject(i)));
-            }
-            clearConsole();
-            printConsole("--Data Loading from "+file.getAbsolutePath()+"--\n");
-            printActiveSearchResult();
-
+            openFile(file);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
 
+    /**
+     * Advance2 load search history
+     * @param file the .3111 file to load
+     * @throws IOException
+     */
+    public void openFile(File file) throws IOException {
+        String inputJson = readFile(file);
+        JSONObject inputObject = new JSONObject(inputJson);
+        activeSearchKeyword = inputObject.optString("keyword");
+        JSONArray result = (JSONArray) inputObject.get("result");
+        activeSearchResult = new ArrayList<>();
+        for(int i=0 ;i<result.length();i++){
+//                    activeSearchResult.add((Item)result.get(i));
+            activeSearchResult.add(new Item(result.getJSONObject(i)));
+        }
+        clearConsole();
+        printConsole("--Data Loading from "+file.getAbsolutePath()+"--\n");
+        printActiveSearchResult();
     }
 
     /**
