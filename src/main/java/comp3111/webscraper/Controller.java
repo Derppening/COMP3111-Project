@@ -112,8 +112,9 @@ public class Controller {
         SearchRecord.push(textFieldKeyword.getText(), result);
 
         textAreaConsole.setText(serializeItems(result));
-
-        itemLastSearch.setDisable(false);
+        if (SearchRecord.canLoad()) {
+            itemLastSearch.setDisable(false);
+        }
     }
 
     /**
