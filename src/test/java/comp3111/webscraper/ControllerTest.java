@@ -93,8 +93,11 @@ public class ControllerTest extends ApplicationTest {
         push(KeyCode.T);
         push(KeyCode.ENTER);
         WaitForAsyncUtils.sleep(4, TimeUnit.SECONDS);
-        assertNotNull(controller.testPeekSearchResult());
-//        assertEquals(original,new JSONArray(controller.testPeekSearchResult()).toString());
+//        assertNotNull(controller.testPeekSearchResult());
+        String load = new JSONArray(controller.testPeekSearchResult()).toString();
+        System.out.println(original);
+        System.out.println(load);
+        assertEquals(original,load);
     }
 
     @Test
