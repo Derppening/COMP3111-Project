@@ -157,19 +157,17 @@ public class Controller {
         fileChooser.setTitle("Save Search");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Webscrapper File(*.3111)", "*.3111"));
         File file = fileChooser.showSaveDialog(stage);
-        if (file != null) {
-            try {
-                if(!file.getName().contains(".")) {
-                    file = new File(file.getAbsolutePath() + ".3111");
-                    System.out.println("add .3111 triggered");
-                }
-                FileOutputStream fooStream = new FileOutputStream(file, false);
-                fooStream.write(outputJson.getBytes());
-                fooStream.close();
-
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+        try {
+            if(!file.getName().contains(".")) {
+                file = new File(file.getAbsolutePath() + ".3111");
+                System.out.println("add .3111 triggered");
             }
+            FileOutputStream fooStream = new FileOutputStream(file, false);
+            fooStream.write(outputJson.getBytes());
+            fooStream.close();
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -185,27 +183,22 @@ public class Controller {
         fileChooser.setTitle("Open Search");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Webscrapper File(*.3111)", "*.3111"));
         File file = fileChooser.showOpenDialog(stage);
-        if (file != null) {
-            try {
-                if(!file.getName().contains(".")) {
-                    file = new File(file.getAbsolutePath() + ".3111");
-                }
-                String inputJson = readFile(file);
-                JSONObject inputObject = new JSONObject(inputJson);
-                activeSearchKeyword = inputObject.optString("keyword");
-                JSONArray result = (JSONArray) inputObject.get("result");
-                activeSearchResult = new ArrayList<>();
-                for(int i=0 ;i<result.length();i++){
+        try {
+            String inputJson = readFile(file);
+            JSONObject inputObject = new JSONObject(inputJson);
+            activeSearchKeyword = inputObject.optString("keyword");
+            JSONArray result = (JSONArray) inputObject.get("result");
+            activeSearchResult = new ArrayList<>();
+            for(int i=0 ;i<result.length();i++){
 //                    activeSearchResult.add((Item)result.get(i));
-                    activeSearchResult.add(new Item(result.getJSONObject(i)));
-                }
-                clearConsole();
-                printConsole("--Data Loading from "+file.getAbsolutePath()+"--\n");
-                printActiveSearchResult();
-
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+                activeSearchResult.add(new Item(result.getJSONObject(i)));
             }
+            clearConsole();
+            printConsole("--Data Loading from "+file.getAbsolutePath()+"--\n");
+            printActiveSearchResult();
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
 
     }
