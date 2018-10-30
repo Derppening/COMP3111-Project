@@ -45,7 +45,7 @@
                                     promptText="Keyword" fx:id="textFieldKeyword" />
                                 <!--  this is the Go button. When it is clicked, it calls Controller.actionSearch() -->
                                 <Button layoutX="145.0" layoutY="36.0" mnemonicParsing="false" onAction="#actionSearch"
-                                    prefHeight="25.0" prefWidth="35.0" text="Go" />
+                                    prefHeight="25.0" prefWidth="35.0" text="Go" fx:id="buttonGo"/>
 
                             </children>
                         </AnchorPane>

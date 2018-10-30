@@ -84,10 +84,13 @@ public class Controller {
     @FXML
     private void actionSearch() {
         System.out.println("actionSearch: " + textFieldKeyword.getText());
-        activeSearchResult = scraper.scrape(textFieldKeyword.getText());
-        activeSearchKeyword = textFieldKeyword.getText();
-        clearConsole();
-        printActiveSearchResult();
+        List<Item> result = scraper.scrape(textFieldKeyword.getText());
+        if(result!=null){
+            activeSearchResult = result;
+            activeSearchKeyword = textFieldKeyword.getText();
+            clearConsole();
+            printActiveSearchResult();
+        }
         labelCount.setText("Hi");
     }
 
@@ -220,6 +223,25 @@ public class Controller {
         }
         inputStream.close();
         return str;
+    }
+
+    /**
+     * For testing basic 2
+     * @param keyword search keyword
+     * @return the new search result
+     */
+    public List<Item> testScrape(String keyword){
+        textFieldKeyword.setText(keyword);
+        actionSearch();
+        return activeSearchResult;
+    }
+
+    /**
+     * For testing to take the active search result
+     * @return the current active search result
+     */
+    public List<Item> testPeekSearchResult(){
+        return activeSearchResult;
     }
 }
 

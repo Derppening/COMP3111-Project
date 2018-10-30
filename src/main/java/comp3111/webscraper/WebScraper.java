@@ -91,9 +91,14 @@ public class WebScraper {
      */
     public List<Item> scrape(String keyword) {
         List<Item> result = new Vector<>();
-        if (keyword == "") return result;
-//        result.addAll(oldScrape(keyword));
-        result.addAll(newScrape(keyword));
+        if (keyword.length()==0) return null;
+        try {
+            result.addAll(oldScrape(keyword));
+            result.addAll(newScrape(keyword));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
         Collections.sort(result, getItemComparator());
         return result;
     }
@@ -119,12 +124,8 @@ public class WebScraper {
      * @param keyword - the keyword you want to search
      * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
      */
-    private List<Item> oldScrape(String keyword) {
-        try {
-            return oldScrapeByUrl(obtainOldScrapeUrl(keyword));
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
+    private List<Item> oldScrape(String keyword) throws UnsupportedEncodingException {
+        return oldScrapeByUrl(obtainOldScrapeUrl(keyword));
     }
 
     /**
@@ -183,13 +184,8 @@ public class WebScraper {
      * @param keyword - the keyword you want to search
      * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
      */
-    private List<Item> newScrape(String keyword) {
-        try {
-            return newScrapeByUrl(obtainNewScrapeUrl(keyword));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return null;
-        }
+    private List<Item> newScrape(String keyword) throws UnsupportedEncodingException {
+        return newScrapeByUrl(obtainNewScrapeUrl(keyword));
     }
 
     /**
