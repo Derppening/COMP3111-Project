@@ -142,6 +142,8 @@ public class Controller {
                     .append("\t")
                     .append(item.getPrice())
                     .append("\t")
+                    .append(item.getTime())
+                    .append("\t")
                     .append(item.getUrl())
                     .append("\n");
         }

@@ -4,9 +4,16 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlTime;
 
 import java.net.URLEncoder;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.Vector;
 
 
@@ -64,6 +71,12 @@ import java.util.Vector;
  */
 public class WebScraper {
 
+    private static final DateTimeFormatter DATE_TIME_FMT = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy-MM-dd HH:mm")
+            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+            .toFormatter()
+            .withZone(TimeZone.getDefault().toZoneId());
+
     private static final String DEFAULT_URL = "https://newyork.craigslist.org/";
     private WebClient client;
 
@@ -97,6 +110,7 @@ public class WebScraper {
                 HtmlElement htmlItem = (HtmlElement) elem;
                 HtmlAnchor itemAnchor = htmlItem.getFirstByXPath(".//p[@class='result-info']/a");
                 HtmlElement spanPrice = htmlItem.getFirstByXPath(".//a/span[@class='result-price']");
+                HtmlTime itemTime = htmlItem.getFirstByXPath(".//p[@class='result-info']/time");
 
                 // It is possible that an item doesn't have any price, we set the price to 0.0
                 // in this case
@@ -105,6 +119,7 @@ public class WebScraper {
                 Item item = new Item();
                 item.setTitle(itemAnchor.asText());
                 item.setUrl(DEFAULT_URL + itemAnchor.getHrefAttribute());
+                item.setTime(DATE_TIME_FMT.parse(itemTime.getAttribute("datetime"), Instant::from));
 
                 item.setPrice(new Double(itemPrice.replace("$", "")));
 
