@@ -17,8 +17,17 @@ public class SearchRecord {
      */
     private static Stack<SearchRecord> lastSearch = new Stack<>();
 
+    /**
+     * Keyword used to conduct the search.
+     */
     private final String keyword;
+    /**
+     * Items returned by the search.
+     */
     private final List<Item> items;
+    /**
+     * Time when this search is conducted.
+     */
     private final Instant timeSaved;
 
     /**
@@ -83,7 +92,7 @@ public class SearchRecord {
      *
      * @return Pair of keyword used to initiate the search, and a list of items returned by the original search.
      */
-    public static @NotNull SearchRecord pop() {
+    public static @NotNull SearchRecord popLastSearch() {
         if (!canLoad()) {
             throw new IllegalStateException("Cannot pop search results when <2 queries are conducted!");
         }
