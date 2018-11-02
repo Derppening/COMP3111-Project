@@ -9,17 +9,19 @@ public class Item {
     private String url;
     private String portal;
 
-    public Item(){}
+    public Item() {
+    }
 
     /**
      * Construct Item from json object
+     *
      * @param rawItem in .3111 json object
      */
-    public Item(JSONObject rawItem){
-        if(rawItem.has("title"))setTitle(rawItem.optString("title"));
-        if(rawItem.has("price"))setPrice(rawItem.optDouble("price"));
-        if(rawItem.has("url"))setUrl(rawItem.optString("url"));
-        if(rawItem.has("portal"))setPortal(rawItem.optString("portal"));
+    public Item(JSONObject rawItem) {
+        if (rawItem.has("title")) setTitle(rawItem.optString("title"));
+        if (rawItem.has("price")) setPrice(rawItem.optDouble("price"));
+        if (rawItem.has("url")) setUrl(rawItem.optString("url"));
+        if (rawItem.has("portal")) setPortal(rawItem.optString("portal"));
     }
 
     public String getTitle() {
@@ -46,8 +48,12 @@ public class Item {
         this.url = url;
     }
 
-    public String getPortal(){ return portal; }
+    public String getPortal() {
+        return portal;
+    }
 
-    public void setPortal(String portal){ this.portal = portal; }
+    public void setPortal(String portal) {
+        this.portal = portal;
+    }
 
 }

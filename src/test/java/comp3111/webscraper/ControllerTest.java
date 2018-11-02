@@ -48,7 +48,7 @@ public class ControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void testSearch(){
+    public void testSearch() {
         System.out.println("testSearch");
         clickOn("#textFieldKeyword");
         write("iphone");
@@ -56,9 +56,9 @@ public class ControllerTest extends ApplicationTest {
         List<Item> result = controller.testPeekSearchResult();
         assertNotNull(result);
         clickOn("#textFieldKeyword");
-        for(int i=0 ;i< 10; i++)push(KeyCode.BACK_SPACE);
+        for (int i = 0; i < 10; i++) push(KeyCode.BACK_SPACE);
         clickOn("#buttonGo");
-        assertEquals(new JSONObject(controller.testPeekSearchResult()).toString(),new JSONObject(result).toString());
+        assertEquals(new JSONObject(controller.testPeekSearchResult()).toString(), new JSONObject(result).toString());
 
     }
 
@@ -66,17 +66,17 @@ public class ControllerTest extends ApplicationTest {
     public void testSaveLoad() throws IOException {
         System.out.println("test: save load");
         File file = new File("t.3111");
-        if(file.delete()){
+        if (file.delete()) {
             System.out.println("deleted t.3111");
-        }else System.out.println("delete t.3111 fail");
+        } else System.out.println("delete t.3111 fail");
         controller.testGenerateDummieResult();
         String original = new JSONArray(controller.testPeekSearchResult()).toString();
         clickOn("#menuFile");
         clickOn("#labelSave");
 //        WaitForAsyncUtils.waitForFxEvents();
-        push(KeyCode.SHIFT,KeyCode.DIGIT8);
+        push(KeyCode.SHIFT, KeyCode.DIGIT8);
         push(KeyCode.DECIMAL);
-        push(KeyCode.SHIFT,KeyCode.DIGIT8);
+        push(KeyCode.SHIFT, KeyCode.DIGIT8);
         push(KeyCode.ENTER);
         push(KeyCode.BACK_SPACE);
         push(KeyCode.BACK_SPACE);
@@ -102,14 +102,14 @@ public class ControllerTest extends ApplicationTest {
         String load = new JSONArray(controller.testPeekSearchResult()).toString();
         System.out.println(original);
         System.out.println(load);
-        assertEquals(original,load);
+        assertEquals(original, load);
     }
 
     @Test
     public void testOpenRubbishFile() throws IOException {
         File file = new File("e.3111");
-        FileOutputStream fout = new FileOutputStream(file,false);
-        String rubbish ="swegjisoefeio";
+        FileOutputStream fout = new FileOutputStream(file, false);
+        String rubbish = "swegjisoefeio";
         fout.write(rubbish.getBytes());
         fout.close();
 
@@ -119,6 +119,6 @@ public class ControllerTest extends ApplicationTest {
         push(KeyCode.E);
         push(KeyCode.ENTER);
         WaitForAsyncUtils.sleep(4, TimeUnit.SECONDS);
-        assertEquals(controller.testPeekSearchResult().size(),10);
+        assertEquals(controller.testPeekSearchResult().size(), 10);
     }
 }

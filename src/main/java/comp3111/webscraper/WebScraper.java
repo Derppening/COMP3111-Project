@@ -84,6 +84,42 @@ public class WebScraper {
     }
 
     /**
+     * read the string in string reader
+     *
+     * @param rd reader that holds the string
+     * @return extract string from read
+     * @throws IOException
+     */
+    private static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * convert json from url into jsonobject
+     *
+     * @param url where the json stored
+     * @return the corresponding object represented by the json at the url
+     * @throws IOException
+     * @throws JSONException
+     */
+    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+        InputStream is = new URL(url).openStream();
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            String jsonText = readAll(rd);
+            JSONObject json = new JSONObject(jsonText);
+            return json;
+        } finally {
+            is.close();
+        }
+    }
+
+    /**
      * The only method implemented in this class, to scrape web content from the craigslist
      *
      * @param keyword - the keyword you want to search
@@ -91,7 +127,7 @@ public class WebScraper {
      */
     public List<Item> scrape(String keyword) {
         List<Item> result = new Vector<>();
-        if (keyword.length()==0) return null;
+        if (keyword.length() == 0) return null;
         try {
             result.addAll(oldScrape(keyword));
             result.addAll(newScrape(keyword));
@@ -105,6 +141,7 @@ public class WebScraper {
 
     /**
      * Obtain the comparator for sorting item
+     *
      * @return the corresponding comparator to sort in ascending order
      */
     private Comparator<Item> getItemComparator() {
@@ -142,7 +179,7 @@ public class WebScraper {
      * Scrape the old site
      *
      * @param searchUrl in the old site
-     * @return  the list of items scrapped
+     * @return the list of items scrapped
      */
     private List<Item> oldScrapeByUrl(String searchUrl) {
         try {
@@ -190,8 +227,9 @@ public class WebScraper {
 
     /**
      * get a new site search url
+     *
      * @param keyword query string
-     * @return  a url in new site for scrapping
+     * @return a url in new site for scrapping
      * @throws UnsupportedEncodingException
      */
     private String obtainNewScrapeUrl(String keyword) throws UnsupportedEncodingException {
@@ -200,8 +238,9 @@ public class WebScraper {
 
     /**
      * perform the scrapping task in new site
+     *
      * @param url scrapping url in new site, actually is the api endpoint
-     * @return  the list of item obtained
+     * @return the list of item obtained
      */
     private List<Item> newScrapeByUrl(String url) {
         try {
@@ -226,41 +265,6 @@ public class WebScraper {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-        }
-    }
-
-
-    /**
-     * read the string in string reader
-     * @param rd reader that holds the string
-     * @return  extract string from read
-     * @throws IOException
-     */
-    private static String readAll(Reader rd) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int cp;
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
-        }
-        return sb.toString();
-    }
-
-    /**
-     * convert json from url into jsonobject
-     * @param url where the json stored
-     * @return  the corresponding object represented by the json at the url
-     * @throws IOException
-     * @throws JSONException
-     */
-    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-        InputStream is = new URL(url).openStream();
-        try {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-            String jsonText = readAll(rd);
-            JSONObject json = new JSONObject(jsonText);
-            return json;
-        } finally {
-            is.close();
         }
     }
 }
