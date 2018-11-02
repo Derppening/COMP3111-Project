@@ -5,10 +5,18 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
+import java.io.*;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * WebScraper provide a sample code that scrape web content. After it is constructed, you can call the method scrape with a keyword,
@@ -63,7 +71,6 @@ import java.util.Vector;
  * &lsaquo; a &rsaquo; to retrieve the display text (by .asText()) and the link (by .getHrefAttribute()). It also extracts
  */
 public class WebScraper {
-
     private static final String DEFAULT_URL = "https://newyork.craigslist.org/";
     private WebClient client;
 
@@ -83,11 +90,63 @@ public class WebScraper {
      * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
      */
     public List<Item> scrape(String keyword) {
-
+        List<Item> result = new Vector<>();
+        if (keyword.length()==0) return null;
         try {
-            String searchUrl = DEFAULT_URL + "search/sss?sort=rel&query=" + URLEncoder.encode(keyword, "UTF-8");
-            HtmlPage page = client.getPage(searchUrl);
+            result.addAll(oldScrape(keyword));
+            result.addAll(newScrape(keyword));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
+        Collections.sort(result, getItemComparator());
+        return result;
+    }
 
+    /**
+     * Obtain the comparator for sorting item
+     * @return the corresponding comparator to sort in ascending order
+     */
+    private Comparator<Item> getItemComparator() {
+        return new Comparator<Item>() {
+            @Override
+            public int compare(Item o1, Item o2) {
+                double p1 = o1.getPrice();
+                double p2 = o2.getPrice();
+                return (p1 > p2 ? 1 : p1 < p2 ? -1 : 0);
+            }
+        };
+    }
+
+    /**
+     * Perform all tasks including pagination on old site
+     *
+     * @param keyword - the keyword you want to search
+     * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
+     */
+    private List<Item> oldScrape(String keyword) throws UnsupportedEncodingException {
+        return oldScrapeByUrl(obtainOldScrapeUrl(keyword));
+    }
+
+    /**
+     * obtain a url for scrapping
+     *
+     * @param keyword keyword for search
+     * @return url for scrapping
+     */
+    private String obtainOldScrapeUrl(String keyword) throws UnsupportedEncodingException {
+        return DEFAULT_URL + "search/sss?sort=rel&query=" + URLEncoder.encode(keyword, "UTF-8");
+    }
+
+    /**
+     * Scrape the old site
+     *
+     * @param searchUrl in the old site
+     * @return  the list of items scrapped
+     */
+    private List<Item> oldScrapeByUrl(String searchUrl) {
+        try {
+            HtmlPage page = client.getPage(searchUrl);
 
             List<?> items = page.getByXPath("//li[@class='result-row']");
 
@@ -104,9 +163,10 @@ public class WebScraper {
 
                 Item item = new Item();
                 item.setTitle(itemAnchor.asText());
-                item.setUrl(DEFAULT_URL + itemAnchor.getHrefAttribute());
+                item.setUrl(itemAnchor.getHrefAttribute());
 
                 item.setPrice(new Double(itemPrice.replace("$", "")));
+                item.setPortal("craigslist");
 
                 result.add(item);
             }
@@ -118,4 +178,89 @@ public class WebScraper {
         return null;
     }
 
+    /**
+     * Perform all tasks including pagination on new site
+     *
+     * @param keyword - the keyword you want to search
+     * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
+     */
+    private List<Item> newScrape(String keyword) throws UnsupportedEncodingException {
+        return newScrapeByUrl(obtainNewScrapeUrl(keyword));
+    }
+
+    /**
+     * get a new site search url
+     * @param keyword query string
+     * @return  a url in new site for scrapping
+     * @throws UnsupportedEncodingException
+     */
+    private String obtainNewScrapeUrl(String keyword) throws UnsupportedEncodingException {
+        return "http://api.walmartlabs.com/v1/search?apiKey=knd7pc96vzfvzjb7h6ywz74x&query=" + URLEncoder.encode(keyword, "UTF-8");
+    }
+
+    /**
+     * perform the scrapping task in new site
+     * @param url scrapping url in new site, actually is the api endpoint
+     * @return  the list of item obtained
+     */
+    private List<Item> newScrapeByUrl(String url) {
+        try {
+            Vector<Item> result = new Vector<>();
+            JSONObject object = readJsonFromUrl(url);
+            int length = object.optInt("numItems");
+            if (length == 0) {
+                return result;
+            } else {
+                JSONArray rawItems = (JSONArray) object.get("items");
+                for (int i = 0; i < length; i++) {
+                    JSONObject rawItem = (JSONObject) rawItems.get(i);
+                    Item item = new Item();
+                    item.setTitle(rawItem.optString("name"));
+                    item.setPrice(rawItem.optDouble("salePrice"));
+                    item.setUrl(rawItem.optString("addToCartUrl"));
+                    item.setPortal("walmart");
+                    result.add(item);
+                }
+                return result;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    /**
+     * read the string in string reader
+     * @param rd reader that holds the string
+     * @return  extract string from read
+     * @throws IOException
+     */
+    private static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * convert json from url into jsonobject
+     * @param url where the json stored
+     * @return  the corresponding object represented by the json at the url
+     * @throws IOException
+     * @throws JSONException
+     */
+    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+        InputStream is = new URL(url).openStream();
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            String jsonText = readAll(rd);
+            JSONObject json = new JSONObject(jsonText);
+            return json;
+        } finally {
+            is.close();
+        }
+    }
 }
