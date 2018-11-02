@@ -1,12 +1,14 @@
 package comp3111.webscraper.models;
 
 import comp3111.webscraper.Item;
+import javafx.beans.InvalidationListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Container for storing previous searches. Modeled similar to a {@link java.util.Stack}.
@@ -15,7 +17,7 @@ public class SearchRecord {
     /**
      * Stack storing all search records.
      */
-    private static Stack<SearchRecord> lastSearch = new Stack<>();
+    private static ObservableList<SearchRecord> lastSearch = FXCollections.observableList(new ArrayList<>());
 
     /**
      * Keyword used to conduct the search.
@@ -71,7 +73,7 @@ public class SearchRecord {
      */
     public static void push(@NotNull String keyword, @NotNull List<Item> items) {
         synchronized (SearchRecord.class) {
-            lastSearch.push(new SearchRecord(keyword, items));
+            lastSearch.add(new SearchRecord(keyword, items));
         }
     }
 
@@ -97,10 +99,7 @@ public class SearchRecord {
             throw new IllegalStateException("Cannot pop search results when <2 queries are conducted!");
         }
 
-        SearchRecord top = lastSearch.pop();
-        SearchRecord ret = lastSearch.pop();
-        lastSearch.push(top);
-        return ret;
+        return lastSearch.remove(lastSearch.size() - 2);
     }
 
     /**
@@ -111,6 +110,36 @@ public class SearchRecord {
      * @return Most recent/current record of the search history.
      */
     public static @Nullable SearchRecord peek() {
-        return lastSearch.peek();
+        return lastSearch.get(lastSearch.size() - 1);
+    }
+
+    /**
+     * Retrieves a record from the specified index.
+     *
+     * @param index Index number.
+     * @return Record with the specified index, or null if such element does not exist.
+     */
+    public static @Nullable SearchRecord get(int index) {
+        if (index >= lastSearch.size() || index < 0) {
+            return null;
+        }
+
+        return lastSearch.get(index);
+    }
+
+    /**
+     * @return Read-only view of the search records.
+     */
+    public static @NotNull List<SearchRecord> view() {
+        return Collections.unmodifiableList(lastSearch);
+    }
+
+    /**
+     * Adds an observer for monitoring {@link SearchRecord#lastSearch}.
+     *
+     * @param o Observer to execute.
+     */
+    public static void addObserver(InvalidationListener o) {
+        lastSearch.addListener(o);
     }
 }
