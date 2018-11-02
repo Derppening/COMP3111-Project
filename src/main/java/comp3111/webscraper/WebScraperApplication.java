@@ -37,8 +37,8 @@ import javafx.stage.Stage;
  */
 public class WebScraperApplication extends Application {
 
-    private Stage primaryStage = null;
     private static final String UI_FILE = "/ui.fxml";  //It is very important that you put the file under folder src/main/resources/
+    private Stage primaryStage = null;
 
     /**
      * Entry point of the program. No argument should be supplied

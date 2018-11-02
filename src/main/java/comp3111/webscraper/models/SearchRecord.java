@@ -36,7 +36,7 @@ public class SearchRecord {
      * Private constructor for creating an object.
      *
      * @param keyword Keyword for the query.
-     * @param items Items returned by the query.
+     * @param items   Items returned by the query.
      */
     private SearchRecord(@NotNull String keyword, @NotNull List<Item> items) {
         this.keyword = keyword;
@@ -45,31 +45,10 @@ public class SearchRecord {
     }
 
     /**
-     * @return Time when this record is saved into the stack.
-     */
-    public Instant getTimeSaved() {
-        return timeSaved;
-    }
-
-    /**
-     * @return List of items scraped by this query.
-     */
-    public List<Item> getItems() {
-        return items;
-    }
-
-    /**
-     * @return Keyword used to initiate this query.
-     */
-    public String getKeyword() {
-        return keyword;
-    }
-
-    /**
      * Adds a record into the search history.
      *
      * @param keyword Keyword used to initiate the search.
-     * @param items Items returned by the search.
+     * @param items   Items returned by the search.
      */
     public static void push(@NotNull String keyword, @NotNull List<Item> items) {
         synchronized (SearchRecord.class) {
@@ -88,7 +67,7 @@ public class SearchRecord {
 
     /**
      * Removes the "last search" of the search history.
-     *
+     * <p>
      * Note that in this context, the "last search" is actually the second-to-last search in the stack, because the
      * topmost search will be the current search.
      *
@@ -104,7 +83,7 @@ public class SearchRecord {
 
     /**
      * Peeks at the topmost element of the search history.
-     *
+     * <p>
      * This is useful when the current search is required for this operation.
      *
      * @return Most recent/current record of the search history.
@@ -141,5 +120,26 @@ public class SearchRecord {
      */
     public static void addObserver(InvalidationListener o) {
         lastSearch.addListener(o);
+    }
+
+    /**
+     * @return Time when this record is saved into the stack.
+     */
+    public Instant getTimeSaved() {
+        return timeSaved;
+    }
+
+    /**
+     * @return List of items scraped by this query.
+     */
+    public List<Item> getItems() {
+        return items;
+    }
+
+    /**
+     * @return Keyword used to initiate this query.
+     */
+    public String getKeyword() {
+        return keyword;
     }
 }

@@ -32,8 +32,8 @@ public class TeamMemberInfo {
     /**
      * Private constructor.
      *
-     * @param name Full name.
-     * @param itsc ITSC Account.
+     * @param name   Full name.
+     * @param itsc   ITSC Account.
      * @param github GitHub account.
      */
     private TeamMemberInfo(String name, String itsc, String github) {
