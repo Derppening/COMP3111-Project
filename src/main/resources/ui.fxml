@@ -6,22 +6,22 @@
 
 <?import javafx.scene.chart.*?><?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.131"
-    fx:controller="comp3111.webscraper.Controller">
+    fx:controller="comp3111.webscraper.Controller" fx:id="root">
     <children>
 
         <!-- This is your MenuBar -->
         <MenuBar VBox.vgrow="NEVER">
             <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu mnemonicParsing="false" text="File" fx:id="menuFile">
                     <items>
                         <!-- When the button New is clicked, it call actionNew because onAction-->
                         <!-- I did not associate function to most of the buttons (except the button New and Go). Go ahead and edit if you need it -->
                         <MenuItem mnemonicParsing="false" onAction="#actionNew"
                             text="New (call Controller.actionNew())" />
-                        <MenuItem mnemonicParsing="false" text="Open" />
+                        <MenuItem mnemonicParsing="false" text="Open" onAction="#actionOpen" fx:id="labelOpen"/>
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" text="Close" />
-                        <MenuItem mnemonicParsing="false" text="Save" />
+                        <MenuItem mnemonicParsing="false" text="Save" onAction="#actionSave" fx:id="labelSave"/>
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" text="Quit" />
                     </items>
@@ -45,7 +45,7 @@
                                     promptText="Keyword" fx:id="textFieldKeyword" />
                                 <!--  this is the Go button. When it is clicked, it calls Controller.actionSearch() -->
                                 <Button layoutX="145.0" layoutY="36.0" mnemonicParsing="false" onAction="#actionSearch"
-                                    prefHeight="25.0" prefWidth="35.0" text="Go" />
+                                    prefHeight="25.0" prefWidth="35.0" text="Go" fx:id="buttonGo"/>
 
                             </children>
                         </AnchorPane>
