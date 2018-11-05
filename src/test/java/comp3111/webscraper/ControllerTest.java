@@ -8,6 +8,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
@@ -16,12 +17,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 
 public class ControllerTest extends ApplicationTest {
@@ -29,6 +35,17 @@ public class ControllerTest extends ApplicationTest {
 
     VBox root;
     Controller controller;
+
+    @AfterClass
+    public static void cleanup() {
+        try {
+            Files.walk(Paths.get("."), 0)
+                    .filter(file -> file.endsWith(".3111"))
+                    .forEach(f -> f.toFile().delete());
+        } catch (IOException e) {
+            fail("Unable to delete files");
+        }
+    }
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -120,5 +137,37 @@ public class ControllerTest extends ApplicationTest {
         push(KeyCode.ENTER);
         WaitForAsyncUtils.sleep(4, TimeUnit.SECONDS);
         assertEquals(controller.testPeekSearchResult().size(), 10);
+    }
+
+    @Test
+    public void testSerializeItems() {
+        Class<?> clazz = controller.getClass();
+        try {
+            Method m = clazz.getDeclaredMethod("serializeItems", List.class);
+            m.setAccessible(true);
+            List<Item> l = Arrays.asList(new Item(), new Item());
+            l.get(0).setTitle("Item");
+            l.get(0).setPrice(100.0);
+            l.get(0).setPortal("CraigsList");
+            l.get(0).setUrl("http");
+            l.get(1).setTitle("Item2");
+            l.get(1).setPrice(1.0);
+            l.get(1).setPortal("A");
+            l.get(1).setUrl("https");
+
+            String s = (String) m.invoke(null, l);
+            assertEquals("Item\t100.0\tCraigsList\thttp\nItem2\t1.0\tA\thttps", s);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            fail(e.toString());
+        }
+    }
+
+    @Test
+    public void testRecordComboBoxUpdate() {
+        controller.textFieldKeyword.setText("iphone");
+        clickOn("#buttonGo");
+
+        clickOn("#trendTab");
+        assertEquals(1L, controller.searchRecordComboBox.getItems().stream().filter(s -> s.equals("iphone")).count());
     }
 }

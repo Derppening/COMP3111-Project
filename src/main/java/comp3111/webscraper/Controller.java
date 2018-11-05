@@ -226,6 +226,34 @@ public class Controller {
         areaChart.getXAxis().setLabel("Date in mm/dd/yyyy format");
         areaChart.getYAxis().setLabel("The average selling price of " + record.getKeyword());
 
+        areaChart.getData().add(mapDataToSeries(record));
+
+        areaChart.getData().forEach(s ->
+                s.getData().forEach(data ->
+                        data.getNode().setOnMouseClicked(event -> {
+                            if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
+                                List<Item> items = record.getItems()
+                                        .parallelStream()
+                                        .filter(item -> item.getTime() != null)
+                                        .filter(item -> item.getTime().truncatedTo(ChronoUnit.DAYS).equals(data.getExtraValue()))
+                                        .collect(Collectors.toList());
+
+                                clearConsole();
+                                textAreaConsole.setText(serializeItems(items));
+
+                                setAreaChartColors(s.getData(), data);
+                            }
+                        })));
+        areaChart.getData().forEach(s -> setAreaChartColors(s.getData(), null));
+    }
+
+    /**
+     * Helper function for mapping a {@link SearchRecord} data into {@link XYChart.Series} for displaying on the chart.
+     *
+     * @param record Record to map into a series.
+     * @return {@link XYChart.Series} containing a list of average prices per day.
+     */
+    private XYChart.Series<String, Double> mapDataToSeries(SearchRecord record) {
         XYChart.Series<String, Double> series = new XYChart.Series<>();
         for (Instant i : SEVEN_DAY_INSTANTS) {
             Stream<Item> filteredItems = record.getItems()
@@ -245,18 +273,8 @@ public class Controller {
                 series.getData().add(0, data);
             }
         }
-        areaChart.getData().add(series);
 
-        areaChart.getData()
-                .forEach(s -> s.getData().forEach(data -> data.getNode().setOnMouseClicked(event -> {
-                    if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
-                        clearConsole();
-                        textAreaConsole.setText(serializeItems(record.getItems().parallelStream().filter(item -> item.getTime().truncatedTo(ChronoUnit.DAYS).equals(data.getExtraValue())).collect(Collectors.toList())));
-
-                        setAreaChartColors(s.getData(), data);
-                    }
-                })));
-        areaChart.getData().forEach(s -> setAreaChartColors(s.getData(), null));
+        return series;
     }
 
     /**
@@ -266,7 +284,7 @@ public class Controller {
      * @param hData The data point to highlight.
      */
     private void setAreaChartColors(List<XYChart.Data<String, Double>> series, XYChart.Data<String, Double> hData) {
-        series.forEach(data -> data.getNode().setStyle("-fx-background-color: " + DEFAULT_CHART_COLOR));
+        series.forEach(data -> data.getNode().setStyle(null));
         if (hData != null) {
             hData.getNode().setStyle("-fx-background-color: " + HIGHTLIGHT_CHART_COLOR);
         }
@@ -276,16 +294,16 @@ public class Controller {
      * Serializes a list of items to text for displaying in the {@link Controller#textAreaConsole}.
      *
      * @param items List of items to serialize.
-     * @return Items serialized in the format "$title\t$price\t$url".
+     * @return Items serialized in the format "$title\t$price\t$portal\t$url".
      */
-    private String serializeItems(List<Item> items) {
+    private static String serializeItems(List<Item> items) {
         StringBuilder output = new StringBuilder();
         for (Item item : items) {
             output.append(item.getTitle())
                     .append("\t")
                     .append(item.getPrice())
                     .append("\t")
-                    .append(item.getTime())
+                    .append(item.getPortal())
                     .append("\t")
                     .append(item.getUrl())
                     .append("\n");
@@ -327,20 +345,9 @@ public class Controller {
      * print out the most result/ loaded search result
      */
     private void printActiveSearchResult() {
-        StringBuilder output = new StringBuilder();
         if (activeSearchResult == null) return;
-        output.append(textAreaConsole.getText());
-        for (Item item : activeSearchResult) {
-            output.append(item.getTitle())
-                    .append("\t")
-                    .append(item.getPrice())
-                    .append("\t")
-                    .append(item.getPortal())
-                    .append("\t")
-                    .append(item.getUrl())
-                    .append("\n");
-        }
-        textAreaConsole.setText(output.toString());
+        String output = textAreaConsole.getText() + serializeItems(activeSearchResult);
+        textAreaConsole.setText(output);
     }
 
     /**
