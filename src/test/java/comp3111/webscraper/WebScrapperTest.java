@@ -4,8 +4,9 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 
 public class WebScrapperTest {
     @Test
@@ -21,7 +22,7 @@ public class WebScrapperTest {
         System.out.println("testScrapeEmpty");
         WebScraper webScraper = new WebScraper();
         List<Item> result = webScraper.scrape("");
-        assertEquals(result, null);
+        assertNull(result);
     }
 
     @Test
