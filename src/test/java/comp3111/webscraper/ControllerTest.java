@@ -2,6 +2,7 @@ package comp3111.webscraper;
 
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
@@ -169,5 +170,45 @@ public class ControllerTest extends ApplicationTest {
 
         clickOn("#trendTab");
         assertEquals(1L, controller.searchRecordComboBox.getItems().stream().filter(s -> s.equals("iphone")).count());
+    }
+
+    @Test
+    public void testSelectComboBoxItem() {
+        // populate the search records
+        for (String keyword : Arrays.asList("iphone", "ipad", "ipod", "car", "bike", "watch")) {
+            controller.textFieldKeyword.setText(keyword);
+            clickOn("#buttonGo");
+        }
+
+        assertEquals(5, controller.searchRecordComboBox.getItems().size());
+
+        clickOn("#trendTab");
+        for (int i = 1; i <= 5; ++i) {
+            clickOn("#searchRecordComboBox");
+            for (int j = 0; j < i; ++j) {
+                type(KeyCode.DOWN);
+            }
+            type(KeyCode.ENTER);
+            assertTrue(controller.areaChart.getData().size() != 0);
+        }
+    }
+
+    @Test
+    public void testDoubleClickChartNode() {
+        controller.textFieldKeyword.setText("iphone");
+        clickOn("#buttonGo");
+
+        String tmp = controller.textAreaConsole.getText();
+
+        clickOn("#trendTab");
+        clickOn("#searchRecordComboBox");
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+
+        Node n = controller.areaChart.getData().get(0).getData().get(0).getNode();
+        doubleClickOn(n);
+
+        assertFalse(controller.areaChart.getData().get(0).getData().get(0).getNode().getStyle().isEmpty());
+        assertNotEquals(controller.textAreaConsole.getText(), tmp);
     }
 }
