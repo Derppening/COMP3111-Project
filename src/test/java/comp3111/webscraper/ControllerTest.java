@@ -185,9 +185,7 @@ public class ControllerTest extends ApplicationTest {
         clickOn("#trendTab");
         for (int i = 1; i <= 5; ++i) {
             clickOn("#searchRecordComboBox");
-            for (int j = 1; j <= i; ++j) {
-                type(KeyCode.DOWN);
-            }
+            type(KeyCode.DOWN);
             type(KeyCode.ENTER);
             assertTrue(controller.areaChart.getData().size() != 0);
             assertTrue(controller.areaChart.getData().get(0).getData().size() != 0);
@@ -230,6 +228,8 @@ public class ControllerTest extends ApplicationTest {
 
         clickOn("#menuFile");
         clickOn("#itemLastSearch");
+
+        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
 
         assertTrue(controller.itemLastSearch.isDisable());
 
