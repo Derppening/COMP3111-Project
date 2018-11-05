@@ -199,7 +199,7 @@ public class Controller {
             throw new IllegalStateException("actionLastSearch should not be invokable");
         }
 
-        SearchRecord lastSearch = SearchRecord.popLastSearch();
+        SearchRecord lastSearch = SearchRecord.popAndGet();
         itemLastSearch.setDisable(true);
         textFieldKeyword.setText(lastSearch.getKeyword());
         textAreaConsole.setText(serializeItems(lastSearch.getItems()));

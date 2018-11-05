@@ -3,9 +3,7 @@ package comp3111.webscraper.models;
 import comp3111.webscraper.Item;
 import javafx.collections.ObservableList;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -55,13 +53,13 @@ public class SearchRecordTest {
         SearchRecord.push("record3", Collections.emptyList());
 
         assertEquals("record3", SearchRecord.peek().getKeyword());
-        assertEquals("record2", SearchRecord.popLastSearch().getKeyword());
-        assertEquals("record3", SearchRecord.peek().getKeyword());
-        assertEquals("record1", SearchRecord.popLastSearch().getKeyword());
-        assertEquals("record3", SearchRecord.peek().getKeyword());
+        assertEquals("record2", SearchRecord.popAndGet().getKeyword());
+        assertEquals("record2", SearchRecord.peek().getKeyword());
+        assertEquals("record1", SearchRecord.popAndGet().getKeyword());
+        assertEquals("record1", SearchRecord.peek().getKeyword());
 
         try {
-            SearchRecord.popLastSearch();
+            SearchRecord.popAndGet();
             fail("Expected an exception!");
         } catch (IllegalStateException e) {
             // success

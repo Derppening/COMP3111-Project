@@ -70,19 +70,17 @@ public class SearchRecord {
     }
 
     /**
-     * Removes the "last search" of the search history.
-     * <p>
-     * Note that in this context, the "last search" is actually the second-to-last search in the stack, because the
-     * topmost search will be the current search.
+     * Removes the most recent search, and return the second-most recent search.
      *
      * @return Pair of keyword used to initiate the search, and a list of items returned by the original search.
      */
-    public static @NotNull SearchRecord popLastSearch() {
+    public static @NotNull SearchRecord popAndGet() {
         if (!canLoad()) {
             throw new IllegalStateException("Cannot pop search results when <2 queries are conducted!");
         }
 
-        return lastSearch.remove(lastSearch.size() - 2);
+        lastSearch.remove(lastSearch.size() - 1);
+        return lastSearch.get(lastSearch.size() - 1);
     }
 
     /**
