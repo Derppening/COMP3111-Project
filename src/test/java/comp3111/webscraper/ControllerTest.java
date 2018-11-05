@@ -225,12 +225,7 @@ public class ControllerTest extends ApplicationTest {
         }
 
         assertFalse(controller.itemLastSearch.isDisable());
-
-        clickOn("#menuFile");
-        clickOn("#itemLastSearch");
-
-        WaitForAsyncUtils.sleep(1, TimeUnit.SECONDS);
-
+        controller.actionLastSearch();
         assertTrue(controller.itemLastSearch.isDisable());
 
         assertEquals("ipad", controller.textFieldKeyword.getText());
