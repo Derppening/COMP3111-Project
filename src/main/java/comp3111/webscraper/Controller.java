@@ -5,41 +5,29 @@ import comp3111.webscraper.controllers.MenuController;
 import comp3111.webscraper.models.SearchRecord;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.chart.AreaChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import org.jetbrains.annotations.NotNull;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import javax.imageio.ImageIO;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.event.ActionEvent;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -59,6 +47,8 @@ public class Controller {
             .parseDefaulting(ChronoField.NANO_OF_DAY, 0)
             .toFormatter()
             .withZone(TimeZone.getTimeZone("UTC").toZoneId());
+    private static final String DEFAULT_CHART_COLOR = "rgb(0, 255, 0)";
+    private static final String HIGHTLIGHT_CHART_COLOR = "rgb(255, 0, 0)";
 
     private static final List<Instant> SEVEN_DAY_INSTANTS;
     static {
@@ -264,11 +254,9 @@ public class Controller {
     }
 
     private void setAreaChartColors(List<XYChart.Data<String, Double>> series, XYChart.Data<String, Double> hData) {
-        // TODO(Derppening): Static everything!
-
-        series.forEach(data -> data.getNode().setStyle("-fx-background-color: rgb(0, 255, 0)"));
+        series.forEach(data -> data.getNode().setStyle("-fx-background-color: " + DEFAULT_CHART_COLOR));
         if (hData != null) {
-            hData.getNode().setStyle("-fx-background-color: rgb(255, 0, 0)");
+            hData.getNode().setStyle("-fx-background-color: " + HIGHTLIGHT_CHART_COLOR);
         }
     }
 
@@ -341,14 +329,6 @@ public class Controller {
                     .append("\n");
         }
         textAreaConsole.setText(output.toString());
-    }
-
-    /**
-     * Called when the new button is pressed. Very dummy action - print something in the command prompt.
-     */
-    @FXML
-    private void actionNew() {
-        System.out.println("actionNew");
     }
 
     /**
