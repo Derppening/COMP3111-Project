@@ -224,6 +224,7 @@ public class Controller {
         for (Instant i : SEVEN_DAY_INSTANTS) {
             Stream<Item> filteredItems = record.getItems()
                     .parallelStream()
+                    .filter(item -> item.getTime() != null)
                     .filter(item -> item.getTime().truncatedTo(ChronoUnit.DAYS).equals(i));
             double average = filteredItems
                     .mapToDouble(Item::getPrice)
@@ -243,9 +244,7 @@ public class Controller {
                 .forEach(s -> s.getData().forEach(data -> data.getNode().setOnMouseClicked(event -> {
                     if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
                         textAreaConsole.clear();
-                        // TODO(Derppening): Remove this
-                        System.out.println(record.getItems().parallelStream().filter(item -> item.getTime().truncatedTo(ChronoUnit.DAYS).equals(data.getExtraValue())).collect(Collectors.toList()));
-//                        textAreaConsole.setText(serializeItems(record.getItems().parallelStream().filter(item -> item.getTime().truncatedTo(ChronoUnit.DAYS).equals(data.getExtraValue())).collect(Collectors.toList())));
+                        textAreaConsole.setText(serializeItems(record.getItems().parallelStream().filter(item -> item.getTime().truncatedTo(ChronoUnit.DAYS).equals(data.getExtraValue())).collect(Collectors.toList())));
 
                         setAreaChartColors(s.getData(), data);
                     }
