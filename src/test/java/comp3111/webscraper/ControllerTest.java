@@ -185,11 +185,12 @@ public class ControllerTest extends ApplicationTest {
         clickOn("#trendTab");
         for (int i = 1; i <= 5; ++i) {
             clickOn("#searchRecordComboBox");
-            for (int j = 0; j < i; ++j) {
+            for (int j = 1; j <= i; ++j) {
                 type(KeyCode.DOWN);
             }
             type(KeyCode.ENTER);
             assertTrue(controller.areaChart.getData().size() != 0);
+            assertTrue(controller.areaChart.getData().get(0).getData().size() != 0);
         }
     }
 
@@ -210,5 +211,29 @@ public class ControllerTest extends ApplicationTest {
 
         assertFalse(controller.areaChart.getData().get(0).getData().get(0).getNode().getStyle().isEmpty());
         assertNotEquals(controller.textAreaConsole.getText(), tmp);
+    }
+
+    @Test
+    public void testLastSearch() {
+        String tmp = "";
+
+        for (String keyword : Arrays.asList("iphone", "ipad", "ipod")) {
+            controller.textFieldKeyword.setText(keyword);
+            clickOn("#buttonGo");
+
+            if (keyword.equals("ipad")) {
+                tmp = controller.textAreaConsole.getText();
+            }
+        }
+
+        assertFalse(controller.itemLastSearch.isDisable());
+
+        clickOn("#menuFile");
+        clickOn("#itemLastSearch");
+
+        assertTrue(controller.itemLastSearch.isDisable());
+
+        assertEquals("ipad", controller.textFieldKeyword.getText());
+        assertEquals(tmp, controller.textAreaConsole.getText());
     }
 }
