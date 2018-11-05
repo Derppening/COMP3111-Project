@@ -13,25 +13,27 @@ import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
-import org.jetbrains.annotations.NotNull;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -51,10 +53,11 @@ public class Controller {
     private static final String HIGHTLIGHT_CHART_COLOR = "rgb(255, 0, 0)";
 
     private static final List<Instant> SEVEN_DAY_INSTANTS;
+
     static {
         SEVEN_DAY_INSTANTS = new ArrayList<>(8);
         for (int i = 0; i < 8; ++i) {
-             SEVEN_DAY_INSTANTS.add(Instant.now().truncatedTo(ChronoUnit.DAYS).minus(i, ChronoUnit.DAYS));
+            SEVEN_DAY_INSTANTS.add(Instant.now().truncatedTo(ChronoUnit.DAYS).minus(i, ChronoUnit.DAYS));
         }
     }
 
@@ -62,37 +65,37 @@ public class Controller {
     public Tab trendTab;
 
     @FXML
-    private ComboBox<String> searchRecordComboBox;
+    public ComboBox<String> searchRecordComboBox;
 
     @FXML
-    private AreaChart<String, Double> areaChart;
+    public AreaChart<String, Double> areaChart;
 
     @FXML
-    private TabPane tabPane;
+    public TabPane tabPane;
 
     @FXML
-    private MenuItem itemLastSearch;
+    public MenuItem itemLastSearch;
 
     @FXML
-    private Label labelCount;
+    public Label labelCount;
 
     @FXML
-    private Label labelPrice;
+    public Label labelPrice;
 
     @FXML
-    private Hyperlink labelMin;
+    public Hyperlink labelMin;
 
     @FXML
-    private Hyperlink labelLatest;
+    public Hyperlink labelLatest;
 
     @FXML
-    private TextField textFieldKeyword;
+    public TextField textFieldKeyword;
 
     @FXML
-    private TextArea textAreaConsole;
+    public TextArea textAreaConsole;
 
     @FXML
-    private VBox root;
+    public VBox root;
 
     private WebScraper scraper;
     private Application hostApplication = null;
@@ -144,7 +147,7 @@ public class Controller {
      * Invoked when the "About the Team" menu item is clicked.
      */
     @FXML
-    private void actionDisplayTeamInfo() {
+    public void actionDisplayTeamInfo() {
         MenuController.displayTeamInfo();
     }
 
@@ -152,7 +155,7 @@ public class Controller {
      * Invoked when "Close" menu item is clicked.
      */
     @FXML
-    private void actionClose() {
+    public void actionClose() {
         MenuController.closeSearch((WebScraperApplication) hostApplication);
     }
 
@@ -160,7 +163,7 @@ public class Controller {
      * Invoked when "Quit" menu item is clicked.
      */
     @FXML
-    private void actionQuit() {
+    public void actionQuit() {
         Platform.exit();
     }
 
@@ -168,7 +171,7 @@ public class Controller {
      * Called when the search button is pressed.
      */
     @FXML
-    private void actionSearch() {
+    public void actionSearch() {
         System.out.println("actionSearch: " + textFieldKeyword.getText());
 
         List<Item> result = scraper.scrape(textFieldKeyword.getText());
@@ -191,7 +194,7 @@ public class Controller {
      * Called when "Last Search" menu item is clicked.
      */
     @FXML
-    private void actionLastSearch() {
+    public void actionLastSearch() {
         if (!SearchRecord.canLoad()) {
             throw new IllegalStateException("actionLastSearch should not be invokable");
         }
@@ -206,8 +209,11 @@ public class Controller {
         // TODO(Derppening): Invoke other functions to restore other tabs
     }
 
+    /**
+     * Called when an entry in the combo box is selected.
+     */
     @FXML
-    private void actionComboBoxSelect() {
+    public void actionComboBoxSelect() {
         int index = searchRecordComboBox.getSelectionModel().getSelectedIndex();
         SearchRecord record = SearchRecord.get(index);
 
@@ -225,7 +231,8 @@ public class Controller {
             Stream<Item> filteredItems = record.getItems()
                     .parallelStream()
                     .filter(item -> item.getTime() != null)
-                    .filter(item -> item.getTime().truncatedTo(ChronoUnit.DAYS).equals(i));
+                    .filter(item -> item.getTime().truncatedTo(ChronoUnit.DAYS).equals(i))
+                    .filter(item -> item.getPrice() != 0.0);
             double average = filteredItems
                     .mapToDouble(Item::getPrice)
                     .average()
@@ -252,6 +259,12 @@ public class Controller {
         areaChart.getData().forEach(s -> setAreaChartColors(s.getData(), null));
     }
 
+    /**
+     * Set the color of the area chart.
+     *
+     * @param series The series of data points to format.
+     * @param hData The data point to highlight.
+     */
     private void setAreaChartColors(List<XYChart.Data<String, Double>> series, XYChart.Data<String, Double> hData) {
         series.forEach(data -> data.getNode().setStyle("-fx-background-color: " + DEFAULT_CHART_COLOR));
         if (hData != null) {
@@ -334,7 +347,7 @@ public class Controller {
      * Called when going to save
      */
     @FXML
-    private void actionSave() {
+    public void actionSave() {
 //        System.out.println(activeSearchResultArray.toString());
 //        System.out.println(outputJson);
 
@@ -378,7 +391,7 @@ public class Controller {
      * Called when going to save
      */
     @FXML
-    private void actionOpen() {
+    public void actionOpen() {
         Window stage = root.getScene().getWindow();
 
         FileChooser fileChooser = new FileChooser();
@@ -470,4 +483,3 @@ public class Controller {
         return activeSearchResult;
     }
 }
-
