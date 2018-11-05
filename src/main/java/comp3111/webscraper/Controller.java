@@ -137,6 +137,8 @@ public class Controller {
     private void initialize() {
         if (SearchRecord.canLoad()) {
             itemLastSearch.setDisable(false);
+        } else {
+            itemLastSearch.setDisable(true);
         }
 
         tabPane.getSelectionModel().selectedItemProperty().addListener(new OnTabChangeListener());
@@ -205,8 +207,6 @@ public class Controller {
         textAreaConsole.setText(serializeItems(lastSearch.getItems()));
 
         System.out.println("Loaded query \"" + lastSearch.getKeyword() + "\" from " + lastSearch.getTimeSaved().toString());
-
-        // TODO(Derppening): Invoke other functions to restore other tabs
     }
 
     /**
