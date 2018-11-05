@@ -53,6 +53,10 @@ public class SearchRecord {
     public static void push(@NotNull String keyword, @NotNull List<Item> items) {
         synchronized (SearchRecord.class) {
             lastSearch.add(new SearchRecord(keyword, items));
+
+            if (lastSearch.size() > 5) {
+                lastSearch.remove(0);
+            }
         }
     }
 
