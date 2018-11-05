@@ -243,7 +243,7 @@ public class Controller {
         areaChart.getData()
                 .forEach(s -> s.getData().forEach(data -> data.getNode().setOnMouseClicked(event -> {
                     if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
-                        textAreaConsole.clear();
+                        clearConsole();
                         textAreaConsole.setText(serializeItems(record.getItems().parallelStream().filter(item -> item.getTime().truncatedTo(ChronoUnit.DAYS).equals(data.getExtraValue())).collect(Collectors.toList())));
 
                         setAreaChartColors(s.getData(), data);
