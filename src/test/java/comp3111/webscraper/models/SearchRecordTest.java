@@ -52,6 +52,11 @@ public class SearchRecordTest {
         SearchRecord.push("record2", Collections.emptyList());
         SearchRecord.push("record3", Collections.emptyList());
 
+        assertNull(SearchRecord.get(-1));
+        assertNotNull(SearchRecord.get(0));
+        assertNotNull(SearchRecord.get(2));
+        assertNull(SearchRecord.get(3));
+
         assertEquals("record3", SearchRecord.peek().getKeyword());
         assertEquals("record2", SearchRecord.popAndGet().getKeyword());
         assertEquals("record2", SearchRecord.peek().getKeyword());
