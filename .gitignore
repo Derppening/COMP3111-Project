@@ -1,5 +1,6 @@
 
-# Created by https://www.gitignore.io/api/java,linux,macos,gradle,windows,eclipse,intellij
+# Created by https://www.gitignore.io/api/java,linux,macos,gradle,windows,eclipse,intellij,visualstudiocode
+# Edit at https://www.gitignore.io/?templates=java,linux,macos,gradle,windows,eclipse,intellij,visualstudiocode
 
 ### Eclipse ###
 
@@ -218,6 +219,13 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db
@@ -259,5 +267,7 @@ gradle-app.setting
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
 
+### Gradle Patch ###
+**/build/
 
-# End of https://www.gitignore.io/api/java,linux,macos,gradle,windows,eclipse,intellij
+# End of https://www.gitignore.io/api/java,linux,macos,gradle,windows,eclipse,intellij,visualstudiocode
