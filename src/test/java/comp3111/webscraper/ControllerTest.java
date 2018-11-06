@@ -18,10 +18,7 @@ import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -60,8 +57,8 @@ public class ControllerTest extends ApplicationTest {
     @AfterClass
     public static void cleanup() {
         try {
-            Files.walk(Paths.get("."), 0)
-                    .filter(file -> file.endsWith(".3111"))
+            Files.walk(Paths.get(""), 1)
+                    .filter(file -> file.toString().endsWith(".3111"))
                     .forEach(f -> f.toFile().delete());
         } catch (IOException e) {
             fail("Unable to delete files");

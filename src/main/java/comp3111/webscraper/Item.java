@@ -60,6 +60,7 @@ public class Item {
     public void setPortal(String portal) {
         this.portal = portal;
     }
+
     public Instant getTime() {
         return time;
     }
