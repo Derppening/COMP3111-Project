@@ -89,8 +89,9 @@ public class SearchRecord {
      * This is useful when the current search is required for this operation.
      *
      * @return Most recent/current record of the search history.
+     * @throws IndexOutOfBoundsException if there is no record for the given index.
      */
-    public static @Nullable SearchRecord peek() {
+    public static @NotNull SearchRecord peek() throws IndexOutOfBoundsException {
         return lastSearch.get(lastSearch.size() - 1);
     }
 

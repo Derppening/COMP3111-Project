@@ -49,9 +49,7 @@ public class Controller {
             .parseDefaulting(ChronoField.NANO_OF_DAY, 0)
             .toFormatter()
             .withZone(TimeZone.getTimeZone("UTC").toZoneId());
-    private static final String DEFAULT_CHART_COLOR = "rgb(0, 255, 0)";
     private static final String HIGHTLIGHT_CHART_COLOR = "rgb(255, 0, 0)";
-
     private static final List<Instant> SEVEN_DAY_INSTANTS;
 
     static {
