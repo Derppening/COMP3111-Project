@@ -1,6 +1,9 @@
 package comp3111.webscraper;
 
 
+import comp3111.webscraper.models.SearchRecord;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -10,6 +13,7 @@ import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
@@ -18,6 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
@@ -36,6 +41,21 @@ public class ControllerTest extends ApplicationTest {
 
     VBox root;
     Controller controller;
+
+    @Before
+    public void setupBeforeEach() {
+        Class<?> clazz = SearchRecord.class;
+        try {
+            Field f = clazz.getDeclaredField("lastSearch");
+            f.setAccessible(true);
+
+            ((ObservableList) f.get(null)).clear();
+            assertTrue(((ObservableList) f.get(null)).isEmpty());
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+            fail("Unable to clear search record entries!");
+        }
+    }
 
     @AfterClass
     public static void cleanup() {
@@ -214,6 +234,13 @@ public class ControllerTest extends ApplicationTest {
     @Test
     public void testLastSearch() {
         String tmp = "";
+
+        try {
+            controller.actionLastSearch();
+            fail();
+        } catch (IllegalStateException e) {
+            // test succeeded
+        }
 
         for (String keyword : Arrays.asList("iphone", "ipad", "ipod")) {
             controller.textFieldKeyword.setText(keyword);
