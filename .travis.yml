@@ -21,7 +21,7 @@ addons:
 script:
   - cd $TRAVIS_BUILD_DIR
   - ./gradlew assemble
-  - ./gradlew check
+  - ./gradlew check -i
 
 before_install:
   - if [[ "${TRAVIS_OS_NAME}" == linux ]]; then export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start; fi

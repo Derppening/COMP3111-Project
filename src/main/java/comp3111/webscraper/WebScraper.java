@@ -4,6 +4,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlTime;
 
 import java.io.*;
 import java.net.URL;
@@ -11,7 +12,13 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Comparator;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import org.json.JSONArray;
@@ -71,6 +78,13 @@ import org.json.JSONObject;
  * &lsaquo; a &rsaquo; to retrieve the display text (by .asText()) and the link (by .getHrefAttribute()). It also extracts
  */
 public class WebScraper {
+
+    private static final DateTimeFormatter DATE_TIME_FMT = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy-MM-dd HH:mm")
+            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+            .toFormatter()
+            .withZone(TimeZone.getDefault().toZoneId());
+
     private static final String DEFAULT_URL = "https://newyork.craigslist.org/";
     private WebClient client;
 
@@ -84,6 +98,42 @@ public class WebScraper {
     }
 
     /**
+     * read the string in string reader
+     *
+     * @param rd reader that holds the string
+     * @return extract string from read
+     * @throws IOException
+     */
+    private static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * convert json from url into jsonobject
+     *
+     * @param url where the json stored
+     * @return the corresponding object represented by the json at the url
+     * @throws IOException
+     * @throws JSONException
+     */
+    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+        InputStream is = new URL(url).openStream();
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            String jsonText = readAll(rd);
+            JSONObject json = new JSONObject(jsonText);
+            return json;
+        } finally {
+            is.close();
+        }
+    }
+
+    /**
      * The only method implemented in this class, to scrape web content from the craigslist
      *
      * @param keyword - the keyword you want to search
@@ -91,7 +141,7 @@ public class WebScraper {
      */
     public List<Item> scrape(String keyword) {
         List<Item> result = new Vector<>();
-        if (keyword.length()==0) return null;
+        if (keyword.length() == 0) return null;
         try {
             result.addAll(oldScrape(keyword));
             result.addAll(newScrape(keyword));
@@ -105,6 +155,7 @@ public class WebScraper {
 
     /**
      * Obtain the comparator for sorting item
+     *
      * @return the corresponding comparator to sort in ascending order
      */
     private Comparator<Item> getItemComparator() {
@@ -142,7 +193,7 @@ public class WebScraper {
      * Scrape the old site
      *
      * @param searchUrl in the old site
-     * @return  the list of items scrapped
+     * @return the list of items scrapped
      */
     private List<Item> oldScrapeByUrl(String searchUrl) {
         try {
@@ -156,6 +207,7 @@ public class WebScraper {
                 HtmlElement htmlItem = (HtmlElement) elem;
                 HtmlAnchor itemAnchor = htmlItem.getFirstByXPath(".//p[@class='result-info']/a");
                 HtmlElement spanPrice = htmlItem.getFirstByXPath(".//a/span[@class='result-price']");
+                HtmlTime itemTime = htmlItem.getFirstByXPath(".//p[@class='result-info']/time");
 
                 // It is possible that an item doesn't have any price, we set the price to 0.0
                 // in this case
@@ -164,6 +216,7 @@ public class WebScraper {
                 Item item = new Item();
                 item.setTitle(itemAnchor.asText());
                 item.setUrl(itemAnchor.getHrefAttribute());
+                item.setTime(DATE_TIME_FMT.parse(itemTime.getAttribute("datetime"), Instant::from));
 
                 item.setPrice(new Double(itemPrice.replace("$", "")));
                 item.setPortal("craigslist");
@@ -190,8 +243,9 @@ public class WebScraper {
 
     /**
      * get a new site search url
+     *
      * @param keyword query string
-     * @return  a url in new site for scrapping
+     * @return a url in new site for scrapping
      * @throws UnsupportedEncodingException
      */
     private String obtainNewScrapeUrl(String keyword) throws UnsupportedEncodingException {
@@ -200,8 +254,9 @@ public class WebScraper {
 
     /**
      * perform the scrapping task in new site
+     *
      * @param url scrapping url in new site, actually is the api endpoint
-     * @return  the list of item obtained
+     * @return the list of item obtained
      */
     private List<Item> newScrapeByUrl(String url) {
         try {
@@ -226,41 +281,6 @@ public class WebScraper {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-        }
-    }
-
-
-    /**
-     * read the string in string reader
-     * @param rd reader that holds the string
-     * @return  extract string from read
-     * @throws IOException
-     */
-    private static String readAll(Reader rd) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int cp;
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
-        }
-        return sb.toString();
-    }
-
-    /**
-     * convert json from url into jsonobject
-     * @param url where the json stored
-     * @return  the corresponding object represented by the json at the url
-     * @throws IOException
-     * @throws JSONException
-     */
-    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-        InputStream is = new URL(url).openStream();
-        try {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-            String jsonText = readAll(rd);
-            JSONObject json = new JSONObject(jsonText);
-            return json;
-        } finally {
-            is.close();
         }
     }
 }

@@ -1,6 +1,10 @@
 package comp3111.webscraper;
 
 
+import org.jetbrains.annotations.NotNull;
+
+import java.time.Instant;
+
 import org.json.JSONObject;
 
 public class Item {
@@ -8,25 +12,28 @@ public class Item {
     private double price;
     private String url;
     private String portal;
+    private Instant time;
 
-    public Item(){}
+    public Item() {
+    }
 
     /**
      * Construct Item from json object
+     *
      * @param rawItem in .3111 json object
      */
-    public Item(JSONObject rawItem){
-        if(rawItem.has("title"))setTitle(rawItem.optString("title"));
-        if(rawItem.has("price"))setPrice(rawItem.optDouble("price"));
-        if(rawItem.has("url"))setUrl(rawItem.optString("url"));
-        if(rawItem.has("portal"))setPortal(rawItem.optString("portal"));
+    public Item(JSONObject rawItem) {
+        if (rawItem.has("title")) setTitle(rawItem.optString("title"));
+        if (rawItem.has("price")) setPrice(rawItem.optDouble("price"));
+        if (rawItem.has("url")) setUrl(rawItem.optString("url"));
+        if (rawItem.has("portal")) setPortal(rawItem.optString("portal"));
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(@NotNull String title) {
         this.title = title;
     }
 
@@ -42,12 +49,22 @@ public class Item {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(@NotNull String url) {
         this.url = url;
     }
 
-    public String getPortal(){ return portal; }
+    public String getPortal() {
+        return portal;
+    }
 
-    public void setPortal(String portal){ this.portal = portal; }
+    public void setPortal(String portal) {
+        this.portal = portal;
+    }
+    public Instant getTime() {
+        return time;
+    }
 
+    public void setTime(@NotNull Instant time) {
+        this.time = time;
+    }
 }

@@ -38,6 +38,7 @@ import javafx.stage.Stage;
 public class WebScraperApplication extends Application {
 
     private static final String UI_FILE = "/ui.fxml";  //It is very important that you put the file under folder src/main/resources/
+    private Stage primaryStage = null;
 
     /**
      * Entry point of the program. No argument should be supplied
@@ -54,16 +55,25 @@ public class WebScraperApplication extends Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
+        primaryStage = stage;
+        setupPrimaryStage();
+    }
+
+    public void setupPrimaryStage() throws Exception {
+        if (primaryStage == null) {
+            throw new IllegalStateException("Primary Stage does not exist!");
+        }
+
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource(UI_FILE));
         VBox root = loader.load();
+
+        Controller controller = loader.getController();
+        controller.setHostApplication(this);
+
         Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("WebScrapper");
-        stage.show();
-
-
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("WebScrapper");
+        primaryStage.show();
     }
-
-
 }
