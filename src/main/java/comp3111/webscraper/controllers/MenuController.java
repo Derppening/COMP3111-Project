@@ -11,6 +11,8 @@ import javafx.stage.Stage;
 
 public class MenuController {
     /**
+     * @author Derppening
+     *
      * Spawns a new JavaFX stage and display the team information there.
      */
     public static void displayTeamInfo() {
@@ -37,6 +39,8 @@ public class MenuController {
     }
 
     /**
+     * @author Derppening
+     *
      * Closes the current search by resetting the whole JavaFX stage.
      *
      * @param app Reference to the main JavaFX Application.

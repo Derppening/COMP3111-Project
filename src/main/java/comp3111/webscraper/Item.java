@@ -18,6 +18,8 @@ public class Item {
     }
 
     /**
+     * @author dipsywong98
+     *
      * Construct Item from json object
      *
      * @param rawItem in .3111 json object

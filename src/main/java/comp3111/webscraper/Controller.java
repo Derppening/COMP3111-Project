@@ -120,6 +120,8 @@ public class Controller {
     }
 
     /**
+     * @author Derppening
+     *
      * Sets the reference of the host application.
      *
      * @param app Current instance of {@link javafx.application.Application}.
@@ -129,6 +131,8 @@ public class Controller {
     }
 
     /**
+     * @author Derppening
+     *
      * Default initializer.
      */
     @FXML
@@ -144,6 +148,8 @@ public class Controller {
     }
 
     /**
+     * @author Derppening
+     *
      * Invoked when the "About the Team" menu item is clicked.
      */
     @FXML
@@ -152,6 +158,8 @@ public class Controller {
     }
 
     /**
+     * @author Derppening
+     *
      * Invoked when "Close" menu item is clicked.
      */
     @FXML
@@ -160,6 +168,8 @@ public class Controller {
     }
 
     /**
+     * @author Derppening
+     *
      * Invoked when "Quit" menu item is clicked.
      */
     @FXML
@@ -191,6 +201,8 @@ public class Controller {
     }
 
     /**
+     * @author Derppening
+     *
      * Called when "Last Search" menu item is clicked.
      */
     @FXML
@@ -208,6 +220,8 @@ public class Controller {
     }
 
     /**
+     * @author Derppening
+     *
      * Called when an entry in the combo box is selected.
      */
     @FXML
@@ -246,6 +260,8 @@ public class Controller {
     }
 
     /**
+     * @author Derppening
+     *
      * Helper function for mapping a {@link SearchRecord} data into {@link XYChart.Series} for displaying on the chart.
      *
      * @param record Record to map into a series.
@@ -276,6 +292,8 @@ public class Controller {
     }
 
     /**
+     * @author Derppening
+     *
      * Set the color of the area chart.
      *
      * @param series The series of data points to format.
@@ -310,6 +328,8 @@ public class Controller {
     }
 
     /**
+     * @author Derppening
+     *
      * Updates the search record combo box from {@link SearchRecord}.
      */
     private void updateRecordComboBox() {
@@ -324,6 +344,8 @@ public class Controller {
     }
 
     /**
+     * @author dipsywong98
+     *
      * clear console
      */
     private void clearConsole() {
@@ -331,6 +353,8 @@ public class Controller {
     }
 
     /**
+     * @author dipsywong98
+     *
      * append the str to console
      *
      * @param str the appended string
@@ -340,6 +364,8 @@ public class Controller {
     }
 
     /**
+     * @author dipsywong98
+     *
      * print out the most result/ loaded search result
      */
     private void printActiveSearchResult() {
@@ -349,6 +375,8 @@ public class Controller {
     }
 
     /**
+     * @author dipsywong98
+     *
      * Called when going to save
      */
     @FXML
@@ -371,6 +399,8 @@ public class Controller {
     }
 
     /**
+     * @author dipsywong98
+     *
      * Advance2 save the search record
      *
      * @param file .3111 file target to save to
@@ -393,7 +423,9 @@ public class Controller {
     }
 
     /**
-     * Called when going to save
+     * @author dipsywong98
+     *
+     * Called when going to open
      */
     @FXML
     public void actionOpen() {
@@ -412,6 +444,8 @@ public class Controller {
     }
 
     /**
+     * @author dipsywong98
+     *
      * Advance2 load search history
      *
      * @param file the .3111 file to load
@@ -433,6 +467,8 @@ public class Controller {
     }
 
     /**
+     * @author dipsywong98
+     *
      * Read file into string
      *
      * @param file file to read
@@ -453,6 +489,8 @@ public class Controller {
     }
 
     /**
+     * @author dipsywong98
+     *
      * For testing advance 2, create some result
      *
      * @return the new search result
@@ -472,6 +510,8 @@ public class Controller {
     }
 
     /**
+     * @author dipsywong98
+     *
      * For testing advance2, make the active search empty
      */
     public void testClearActiveResult() {
@@ -480,6 +520,8 @@ public class Controller {
     }
 
     /**
+     * @author dipsywong98
+     *
      * For testing to take the active search result
      *
      * @return the current active search result
