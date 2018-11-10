@@ -9,10 +9,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+/**
+ * @author Derppening
+ *
+ * Controller for actions invoked from the menu.
+ */
 public class MenuController {
     /**
-     * @author Derppening
-     *
      * Spawns a new JavaFX stage and display the team information there.
      */
     public static void displayTeamInfo() {
@@ -39,8 +42,6 @@ public class MenuController {
     }
 
     /**
-     * @author Derppening
-     *
      * Closes the current search by resetting the whole JavaFX stage.
      *
      * @param app Reference to the main JavaFX Application.
