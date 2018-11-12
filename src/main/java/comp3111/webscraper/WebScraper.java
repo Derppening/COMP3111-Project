@@ -155,7 +155,7 @@ public class WebScraper {
             e.printStackTrace();
             return null;
         }
-        Collections.sort(result, getItemComparator());
+        result.sort(Comparator.comparingDouble(Item::getPrice));
         return result;
     }
 
