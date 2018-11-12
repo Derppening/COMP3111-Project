@@ -98,6 +98,8 @@ public class WebScraper {
     }
 
     /**
+     * @author dipsywong98
+     *
      * read the string in string reader
      *
      * @param rd reader that holds the string
@@ -114,6 +116,8 @@ public class WebScraper {
     }
 
     /**
+     * @author dipsywong98
+     *
      * convert json from url into jsonobject
      *
      * @param url where the json stored
@@ -134,6 +138,8 @@ public class WebScraper {
     }
 
     /**
+     * @author dipsywong98, kevinw
+     *
      * The only method implemented in this class, to scrape web content from the craigslist
      *
      * @param keyword - the keyword you want to search
@@ -149,24 +155,8 @@ public class WebScraper {
             e.printStackTrace();
             return null;
         }
-        Collections.sort(result, getItemComparator());
+        result.sort(Comparator.comparingDouble(Item::getPrice));
         return result;
-    }
-
-    /**
-     * Obtain the comparator for sorting item
-     *
-     * @return the corresponding comparator to sort in ascending order
-     */
-    private Comparator<Item> getItemComparator() {
-        return new Comparator<Item>() {
-            @Override
-            public int compare(Item o1, Item o2) {
-                double p1 = o1.getPrice();
-                double p2 = o2.getPrice();
-                return (p1 > p2 ? 1 : p1 < p2 ? -1 : 0);
-            }
-        };
     }
 
     /**
@@ -180,6 +170,8 @@ public class WebScraper {
     }
 
     /**
+     * @author dipsywong98
+     *
      * obtain a url for scrapping
      *
      * @param keyword keyword for search
@@ -190,6 +182,8 @@ public class WebScraper {
     }
 
     /**
+     * @author dipsywong98
+     *
      * Scrape the old site
      *
      * @param searchUrl in the old site
@@ -232,6 +226,8 @@ public class WebScraper {
     }
 
     /**
+     * @author dipsywong98
+     *
      * Perform all tasks including pagination on new site
      *
      * @param keyword - the keyword you want to search
@@ -242,6 +238,8 @@ public class WebScraper {
     }
 
     /**
+     * @author dipsywong98
+     *
      * get a new site search url
      *
      * @param keyword query string
@@ -253,6 +251,8 @@ public class WebScraper {
     }
 
     /**
+     * @author dipsywong98
+     *
      * perform the scrapping task in new site
      *
      * @param url scrapping url in new site, actually is the api endpoint

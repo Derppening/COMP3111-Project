@@ -9,6 +9,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+/**
+ * @author Derppening
+ *
+ * Controller for actions invoked from the menu.
+ */
 public class MenuController {
     /**
      * Spawns a new JavaFX stage and display the team information there.

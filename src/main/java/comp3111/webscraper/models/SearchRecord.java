@@ -11,6 +11,8 @@ import java.time.Instant;
 import java.util.*;
 
 /**
+ * @author Derppening
+ *
  * Container for storing previous searches. Modeled similar to a {@link java.util.Stack}.
  */
 public class SearchRecord {
