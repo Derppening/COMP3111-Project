@@ -477,15 +477,15 @@ public class Controller {
      */
     private String readFile(File file) throws IOException {
         FileInputStream inputStream = new FileInputStream(file);
-        String str = "";
-        byte buf[] = new byte[8];
+        StringBuilder str = new StringBuilder();
+        byte[] buf = new byte[8];
         int bufSize;
         while (inputStream.available() > 0) {
             bufSize = inputStream.read(buf);
-            str += (new String(buf, 0, bufSize));
+            str.append(new String(buf, 0, bufSize));
         }
         inputStream.close();
-        return str;
+        return str.toString();
     }
 
     /**
