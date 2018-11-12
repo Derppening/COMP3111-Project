@@ -160,24 +160,6 @@ public class WebScraper {
     }
 
     /**
-     * @author dipsywong98
-     *
-     * Obtain the comparator for sorting item
-     *
-     * @return the corresponding comparator to sort in ascending order
-     */
-    private Comparator<Item> getItemComparator() {
-        return new Comparator<Item>() {
-            @Override
-            public int compare(Item o1, Item o2) {
-                double p1 = o1.getPrice();
-                double p2 = o2.getPrice();
-                return (p1 > p2 ? 1 : p1 < p2 ? -1 : 0);
-            }
-        };
-    }
-
-    /**
      * Perform all tasks including pagination on old site
      *
      * @param keyword - the keyword you want to search
