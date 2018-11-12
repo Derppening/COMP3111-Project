@@ -1,4 +1,23 @@
 # COMP3111: Software Engineering Project - Webscrapper
+
+[![Build Status](https://travis-ci.com/Derppening/COMP3111-Project.svg?token=ECC8n6hE7n7DN6DCCDMi&branch=master)](https://travis-ci.com/Derppening/COMP3111-Project)
+
+## Task Distribution
+
+| Student | Basic Task | Advanced Task |
+| ------- | ---------- | ------------- |
+| MAK, Ching Hang | 6 | 3 |
+| WONG, Yuk Chun | 2 | 2 |
+| YEUNG, Yu Ching | 3 | 1 |
+
+## Assumptions
+
+- This application is ran on a Windows Test Environment with Oracle JDK.
+- Basic Task 2: The external site is Walmart.
+- Basic Task 6: A hyperlink to the GitHub page is not required.
+- Basic Task 6: Assume that the "Close" button does not affect the Search History.
+- Advanced Task 3: Assume that the "Last Search" action will remove the 2nd-to-last search record.
+
 ## Project Problem Statement and Activities
 
 
