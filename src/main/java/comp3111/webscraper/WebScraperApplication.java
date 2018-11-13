@@ -48,7 +48,7 @@ public class WebScraperApplication extends Application {
         Application.launch(args);
     }
 
-    /*
+    /**
      * @see javafx.application.Application#start(javafx.stage.Stage)
      *
      * This function will be called by the framework shortly after the program started. You are not required to touch any part of this.
@@ -59,6 +59,11 @@ public class WebScraperApplication extends Application {
         setupPrimaryStage();
     }
 
+    /**
+     * Sets up the primary stage as specified by ui.fxml.
+     *
+     * @throws Exception if ui.fxml is not found in the project.
+     */
     public void setupPrimaryStage() throws Exception {
         if (primaryStage == null) {
             throw new IllegalStateException("Primary Stage does not exist!");

@@ -30,6 +30,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -44,19 +45,29 @@ import java.util.stream.Stream;
  */
 public class Controller {
 
+    /**
+     * Date formatter for the "Date" axis of the Trend graph.
+     */
     private static final DateTimeFormatter DATE_TIME_FMT = new DateTimeFormatterBuilder()
             .appendPattern("MM/dd/yyyy")
             .parseDefaulting(ChronoField.NANO_OF_DAY, 0)
             .toFormatter()
             .withZone(TimeZone.getTimeZone("UTC").toZoneId());
+    /**
+     * Color for highlighted data point in the Trend graph.
+     */
     private static final String HIGHTLIGHT_CHART_COLOR = "rgb(255, 0, 0)";
+    /**
+     * Immutable list of {@link Instant} representing the past 8 days (including today).
+     */
     private static final List<Instant> SEVEN_DAY_INSTANTS;
 
     static {
-        SEVEN_DAY_INSTANTS = new ArrayList<>(8);
+        List<Instant> instants = new ArrayList<>(8);
         for (int i = 0; i < 8; ++i) {
-            SEVEN_DAY_INSTANTS.add(Instant.now().truncatedTo(ChronoUnit.DAYS).minus(i, ChronoUnit.DAYS));
+            instants.add(Instant.now().truncatedTo(ChronoUnit.DAYS).minus(i, ChronoUnit.DAYS));
         }
+        SEVEN_DAY_INSTANTS = Collections.unmodifiableList(instants);
     }
 
     @FXML
@@ -95,15 +106,40 @@ public class Controller {
     @FXML
     public VBox root;
 
+    /**
+     * Instance of scraper.
+     */
     private WebScraper scraper;
+
+    /**
+     * Reference to the JavaFX application.
+     */
     private Application hostApplication = null;
 
+    /**
+     * List of entries from the active search.
+     */
     private List<Item> activeSearchResult;
 
+    /**
+     * The query used to initiate this search.
+     */
     private String activeSearchKeyword;
 
+    /**
+     * @author Derppening
+     *
+     * Listener for tab change events.
+     */
     private class OnTabChangeListener implements ChangeListener<Tab> {
 
+        /**
+         * Handles "Changed" events from tab change.
+         *
+         * @param observable Value which was changed.
+         * @param oldValue Originally focused tab.
+         * @param newValue New focused tab.
+         */
         @Override
         public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
             if (newValue == trendTab) {
@@ -233,17 +269,22 @@ public class Controller {
             return;
         }
 
+        // reset the data and axis
         areaChart.getData().clear();
         areaChart.setAnimated(false);
         areaChart.getXAxis().setLabel("Date in mm/dd/yyyy format");
         areaChart.getYAxis().setLabel("The average selling price of " + record.getKeyword());
 
+        // insert the data
         areaChart.getData().add(mapDataToSeries(record));
 
+        // enable double click event for all data points
         areaChart.getData().forEach(s ->
                 s.getData().forEach(data ->
                         data.getNode().setOnMouseClicked(event -> {
+                            // if double click
                             if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
+                                // filter all entries of that day, and display on the text console
                                 List<Item> items = record.getItems()
                                         .parallelStream()
                                         .filter(item -> item.getTime() != null)
@@ -253,16 +294,19 @@ public class Controller {
                                 clearConsole();
                                 textAreaConsole.setText(serializeItems(items));
 
+                                // make the color of that point "different"
                                 setAreaChartColors(s.getData(), data);
                             }
                         })));
+        // reset all the colors of the data points
         areaChart.getData().forEach(s -> setAreaChartColors(s.getData(), null));
     }
 
     /**
      * @author Derppening
      *
-     * Helper function for mapping a {@link SearchRecord} data into {@link XYChart.Series} for displaying on the chart.
+     * Helper function for mapping a {@link SearchRecord} data into {@link XYChart.Series} for displaying
+     * on the chart.
      *
      * @param record Record to map into a series.
      * @return {@link XYChart.Series} containing a list of average prices per day.
@@ -449,7 +493,7 @@ public class Controller {
      * Advance2 load search history
      *
      * @param file the .3111 file to load
-     * @throws IOException
+     * @throws IOException if an I/O error occurred while reading the file.
      */
     public void openFile(File file) throws IOException {
         String inputJson = readFile(file);
@@ -473,19 +517,19 @@ public class Controller {
      *
      * @param file file to read
      * @return string in file
-     * @throws IOException
+     * @throws IOException if an I/O error occurred while reading the file.
      */
     private String readFile(File file) throws IOException {
         FileInputStream inputStream = new FileInputStream(file);
-        String str = "";
-        byte buf[] = new byte[8];
+        StringBuilder str = new StringBuilder();
+        byte[] buf = new byte[8];
         int bufSize;
         while (inputStream.available() > 0) {
             bufSize = inputStream.read(buf);
-            str += (new String(buf, 0, bufSize));
+            str.append(new String(buf, 0, bufSize));
         }
         inputStream.close();
-        return str;
+        return str.toString();
     }
 
     /**

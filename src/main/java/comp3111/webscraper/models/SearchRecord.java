@@ -74,7 +74,7 @@ public class SearchRecord {
     /**
      * Removes the most recent search, and return the second-most recent search.
      *
-     * @return Pair of keyword used to initiate the search, and a list of items returned by the original search.
+     * @return A {@link SearchRecord} representing the original search.
      */
     public static @NotNull SearchRecord popAndGet() {
         if (!canLoad()) {

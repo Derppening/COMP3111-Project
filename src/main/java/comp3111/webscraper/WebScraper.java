@@ -10,10 +10,8 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.Comparator;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
@@ -79,6 +77,9 @@ import org.json.JSONObject;
  */
 public class WebScraper {
 
+    /**
+     * Date formatter for the dates scraped from Craigslist.
+     */
     private static final DateTimeFormatter DATE_TIME_FMT = new DateTimeFormatterBuilder()
             .appendPattern("yyyy-MM-dd HH:mm")
             .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
@@ -104,7 +105,7 @@ public class WebScraper {
      *
      * @param rd reader that holds the string
      * @return extract string from read
-     * @throws IOException
+     * @throws IOException if an I/O error occurs when reading.
      */
     private static String readAll(Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -122,16 +123,15 @@ public class WebScraper {
      *
      * @param url where the json stored
      * @return the corresponding object represented by the json at the url
-     * @throws IOException
-     * @throws JSONException
+     * @throws IOException if an I/O error occurs when reading the URL.
+     * @throws JSONException If the scraped JSON is syntactically incorrect.
      */
     public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
         InputStream is = new URL(url).openStream();
         try {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
             String jsonText = readAll(rd);
-            JSONObject json = new JSONObject(jsonText);
-            return json;
+            return new JSONObject(jsonText);
         } finally {
             is.close();
         }
@@ -164,6 +164,7 @@ public class WebScraper {
      *
      * @param keyword - the keyword you want to search
      * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
+     * @throws UnsupportedEncodingException if UTF-8 encoding is not supported.
      */
     private List<Item> oldScrape(String keyword) throws UnsupportedEncodingException {
         return oldScrapeByUrl(obtainOldScrapeUrl(keyword));
@@ -176,6 +177,7 @@ public class WebScraper {
      *
      * @param keyword keyword for search
      * @return url for scrapping
+     * @throws UnsupportedEncodingException if UTF-8 encoding is not supported.
      */
     private String obtainOldScrapeUrl(String keyword) throws UnsupportedEncodingException {
         return DEFAULT_URL + "search/sss?sort=rel&query=" + URLEncoder.encode(keyword, "UTF-8");
@@ -232,6 +234,7 @@ public class WebScraper {
      *
      * @param keyword - the keyword you want to search
      * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
+     * @throws UnsupportedEncodingException if UTF-8 encoding is not supported
      */
     private List<Item> newScrape(String keyword) throws UnsupportedEncodingException {
         return newScrapeByUrl(obtainNewScrapeUrl(keyword));
@@ -244,7 +247,7 @@ public class WebScraper {
      *
      * @param keyword query string
      * @return a url in new site for scrapping
-     * @throws UnsupportedEncodingException
+     * @throws UnsupportedEncodingException if UTF-8 encoding is not supported
      */
     private String obtainNewScrapeUrl(String keyword) throws UnsupportedEncodingException {
         return "http://api.walmartlabs.com/v1/search?apiKey=knd7pc96vzfvzjb7h6ywz74x&query=" + URLEncoder.encode(keyword, "UTF-8");
