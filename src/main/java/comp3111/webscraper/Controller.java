@@ -269,17 +269,22 @@ public class Controller {
             return;
         }
 
+        // reset the data and axis
         areaChart.getData().clear();
         areaChart.setAnimated(false);
         areaChart.getXAxis().setLabel("Date in mm/dd/yyyy format");
         areaChart.getYAxis().setLabel("The average selling price of " + record.getKeyword());
 
+        // insert the data
         areaChart.getData().add(mapDataToSeries(record));
 
+        // enable double click event for all data points
         areaChart.getData().forEach(s ->
                 s.getData().forEach(data ->
                         data.getNode().setOnMouseClicked(event -> {
+                            // if double click
                             if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
+                                // filter all entries of that day, and display on the text console
                                 List<Item> items = record.getItems()
                                         .parallelStream()
                                         .filter(item -> item.getTime() != null)
@@ -289,16 +294,19 @@ public class Controller {
                                 clearConsole();
                                 textAreaConsole.setText(serializeItems(items));
 
+                                // make the color of that point "different"
                                 setAreaChartColors(s.getData(), data);
                             }
                         })));
+        // reset all the colors of the data points
         areaChart.getData().forEach(s -> setAreaChartColors(s.getData(), null));
     }
 
     /**
      * @author Derppening
      *
-     * Helper function for mapping a {@link SearchRecord} data into {@link XYChart.Series} for displaying on the chart.
+     * Helper function for mapping a {@link SearchRecord} data into {@link XYChart.Series} for displaying
+     * on the chart.
      *
      * @param record Record to map into a series.
      * @return {@link XYChart.Series} containing a list of average prices per day.
@@ -485,7 +493,7 @@ public class Controller {
      * Advance2 load search history
      *
      * @param file the .3111 file to load
-     * @throws IOException
+     * @throws IOException if an I/O error occurred while reading the file.
      */
     public void openFile(File file) throws IOException {
         String inputJson = readFile(file);
@@ -509,7 +517,7 @@ public class Controller {
      *
      * @param file file to read
      * @return string in file
-     * @throws IOException
+     * @throws IOException if an I/O error occurred while reading the file.
      */
     private String readFile(File file) throws IOException {
         FileInputStream inputStream = new FileInputStream(file);
