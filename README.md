@@ -16,7 +16,8 @@
 - Basic Task 2: The external site is Walmart.
 - Basic Task 6: A hyperlink to the GitHub page is not required.
 - Basic Task 6: Assume that the "Close" button does not affect the Search History.
-- Advanced Task 3: Assume that the "Last Search" action will remove the 2nd-to-last search record.
+- Basic Task 6: Assume that the "Last Search" action will remove the 2nd-to-last search record.
+- Advanced Task 3: Assume that there are no color requirements on the double-clicked data point
 
 ## Project Problem Statement and Activities
 
