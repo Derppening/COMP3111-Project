@@ -5,8 +5,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+/**
+ * Data representing a scraped listing.
+ */
 public class Item {
     private String title;
     private double price;
@@ -14,6 +18,11 @@ public class Item {
     private String portal;
     private Instant time;
 
+    /**
+     * Public no-argument constructor.
+     *
+     * Initializes all fields to null and 0.
+     */
     public Item() {
     }
 
@@ -31,42 +40,96 @@ public class Item {
         if (rawItem.has("portal")) setPortal(rawItem.optString("portal"));
     }
 
-    public String getTitle() {
+    /**
+     * Returns the title of the item.
+     *
+     * @return Title of the item, or null if item does not have a title.
+     */
+    public @Nullable String getTitle() {
         return title;
     }
 
+    /**
+     * Sets the title of the item.
+     *
+     * @param title New title of the item. The actual parameter must not be null.
+     */
     public void setTitle(@NotNull String title) {
         this.title = title;
     }
 
+    /**
+     * Returns the price of the item.
+     *
+     * @return Price of the item, or 0.0 if the item does not have a price associated.
+     */
     public double getPrice() {
         return price;
     }
 
+    /**
+     * Sets the price of the item.
+     *
+     * @param price New price of the item.
+     */
     public void setPrice(double price) {
         this.price = price;
     }
 
-    public String getUrl() {
+    /**
+     * Returns the URL of the item.
+     *
+     * @return URL of the item, or null if the item does not have a URL.
+     */
+    public @Nullable String getUrl() {
         return url;
     }
 
+    /**
+     * Sets the URL of the item.
+     *
+     * @param url New URL of the item. The actual parameter must not be null.
+     */
     public void setUrl(@NotNull String url) {
         this.url = url;
     }
 
-    public String getPortal() {
+    /**
+     * Returns the portal the item is scraped from.
+     *
+     * @return Portal of the item, or null if the portal is not set.
+     */
+    public @Nullable String getPortal() {
         return portal;
     }
 
-    public void setPortal(String portal) {
+    /**
+     * Sets the portal where the item is scraped from.
+     *
+     * @param portal New source portal of the item. The actual parameter must not be null.
+     */
+    public void setPortal(@NotNull String portal) {
         this.portal = portal;
     }
 
-    public Instant getTime() {
+    /**
+     * @author Derppening
+     *
+     * Returns the time when this item is posted to the portal.
+     *
+     * @return Time the listing is posted, or null if the data is not available for this listing.
+     */
+    public @Nullable Instant getTime() {
         return time;
     }
 
+    /**
+     * @author Derppening
+     *
+     * Sets the time this item is listed in the portal.
+     *
+     * @param time New time when the item is listed in the portal.
+     */
     public void setTime(@NotNull Instant time) {
         this.time = time;
     }

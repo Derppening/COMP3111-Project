@@ -30,6 +30,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -44,19 +45,29 @@ import java.util.stream.Stream;
  */
 public class Controller {
 
+    /**
+     * Date formatter for the "Date" axis of the Trend graph.
+     */
     private static final DateTimeFormatter DATE_TIME_FMT = new DateTimeFormatterBuilder()
             .appendPattern("MM/dd/yyyy")
             .parseDefaulting(ChronoField.NANO_OF_DAY, 0)
             .toFormatter()
             .withZone(TimeZone.getTimeZone("UTC").toZoneId());
+    /**
+     * Color for highlighted data point in the Trend graph.
+     */
     private static final String HIGHTLIGHT_CHART_COLOR = "rgb(255, 0, 0)";
+    /**
+     * Immutable list of {@link Instant} representing the past 8 days (including today).
+     */
     private static final List<Instant> SEVEN_DAY_INSTANTS;
 
     static {
-        SEVEN_DAY_INSTANTS = new ArrayList<>(8);
+        List<Instant> instants = new ArrayList<>(8);
         for (int i = 0; i < 8; ++i) {
-            SEVEN_DAY_INSTANTS.add(Instant.now().truncatedTo(ChronoUnit.DAYS).minus(i, ChronoUnit.DAYS));
+            instants.add(Instant.now().truncatedTo(ChronoUnit.DAYS).minus(i, ChronoUnit.DAYS));
         }
+        SEVEN_DAY_INSTANTS = Collections.unmodifiableList(instants);
     }
 
     @FXML
@@ -95,15 +106,40 @@ public class Controller {
     @FXML
     public VBox root;
 
+    /**
+     * Instance of scraper.
+     */
     private WebScraper scraper;
+
+    /**
+     * Reference to the JavaFX application.
+     */
     private Application hostApplication = null;
 
+    /**
+     * List of entries from the active search.
+     */
     private List<Item> activeSearchResult;
 
+    /**
+     * The query used to initiate this search.
+     */
     private String activeSearchKeyword;
 
+    /**
+     * @author Derppening
+     *
+     * Listener for tab change events.
+     */
     private class OnTabChangeListener implements ChangeListener<Tab> {
 
+        /**
+         * Handles "Changed" events from tab change.
+         *
+         * @param observable Value which was changed.
+         * @param oldValue Originally focused tab.
+         * @param newValue New focused tab.
+         */
         @Override
         public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
             if (newValue == trendTab) {
