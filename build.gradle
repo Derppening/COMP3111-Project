@@ -50,5 +50,3 @@ jacocoTestReport {
         html.destination file("${buildDir}/jacocoHTML")
     }
 }
-
-

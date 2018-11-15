@@ -19,6 +19,10 @@
 - Basic Task 6: Assume that the "Last Search" action will remove the 2nd-to-last search record.
 - Advanced Task 3: Assume that there are no color requirements on the double-clicked data point
 
+## Gantt Chart
+
+![Task Distribution Gantt Chart](images/gantt.png)
+
 ## Project Problem Statement and Activities
 
 

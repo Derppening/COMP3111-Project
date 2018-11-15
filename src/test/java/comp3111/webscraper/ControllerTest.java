@@ -2,6 +2,7 @@ package comp3111.webscraper;
 
 
 import comp3111.webscraper.models.SearchRecord;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -76,10 +77,6 @@ public class ControllerTest extends ApplicationTest {
         stage.setTitle("WebScrapper");
         stage.show();
         controller = loader.getController();
-//        Flow flow = new Flow(Controller.class);
-//        FlowHandler handler = flow.createHandler();
-//        FlowView view = handler.getCurrentView();
-//        controller = (Controller) view.getViewContext().getController();
     }
 
     @Test
@@ -108,7 +105,6 @@ public class ControllerTest extends ApplicationTest {
         String original = new JSONArray(controller.testPeekSearchResult()).toString();
         clickOn("#menuFile");
         clickOn("#labelSave");
-//        WaitForAsyncUtils.waitForFxEvents();
         push(KeyCode.SHIFT, KeyCode.DIGIT8);
         push(KeyCode.DECIMAL);
         push(KeyCode.SHIFT, KeyCode.DIGIT8);
@@ -131,7 +127,6 @@ public class ControllerTest extends ApplicationTest {
         push(KeyCode.T);
         push(KeyCode.ENTER);
         WaitForAsyncUtils.sleep(4, TimeUnit.SECONDS);
-        assertNotNull(controller.testPeekSearchResult());
 
         controller.openFile(realfile);
         String load = new JSONArray(controller.testPeekSearchResult()).toString();
@@ -254,5 +249,10 @@ public class ControllerTest extends ApplicationTest {
 
         assertEquals("ipad", controller.textFieldKeyword.getText());
         assertEquals(tmp, controller.textAreaConsole.getText());
+    }
+
+    @Test
+    public void testDisplayTeamInfo() {
+        Platform.runLater(() -> controller.actionDisplayTeamInfo());
     }
 }

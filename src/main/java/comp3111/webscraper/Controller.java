@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.XYChart;
@@ -24,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -38,10 +40,9 @@ import java.util.stream.Stream;
 
 
 /**
- * @author kevinw
- * <p>
- * <p>
  * Controller class that manage GUI interaction. Please see document about JavaFX for details.
+ *
+ * @author kevinw
  */
 public class Controller {
 
@@ -70,39 +71,75 @@ public class Controller {
         SEVEN_DAY_INSTANTS = Collections.unmodifiableList(instants);
     }
 
+    /**
+     * FXML element for TrendTab.
+     */
     @FXML
     public Tab trendTab;
 
+    /**
+     * FXML element for the search record combo box in the Trend Tab.
+     */
     @FXML
     public ComboBox<String> searchRecordComboBox;
 
+    /**
+     * FXML element for the area chart in the Trend Tab.
+     */
     @FXML
     public AreaChart<String, Double> areaChart;
 
+    /**
+     * FXML element for the pane containing all tabs.
+     */
     @FXML
     public TabPane tabPane;
 
+    /**
+     * FXML element for "Last Search" item in the "File" menu.
+     */
     @FXML
     public MenuItem itemLastSearch;
 
+    /**
+     * FXML element for "Total" label in the "Summary" tab.
+     */
     @FXML
     public Label labelCount;
 
+    /**
+     * FXML element for "AvgPrice" label in the "Summary" tab.
+     */
     @FXML
     public Label labelPrice;
 
+    /**
+     * FXML element for the "Lowest" label in the "Summary" tab.
+     */
     @FXML
     public Hyperlink labelMin;
 
+    /**
+     * FXML element for the "Latest" label in the "Summary" tab.
+     */
     @FXML
     public Hyperlink labelLatest;
 
+    /**
+     * FXML element for the keyword text field.
+     */
     @FXML
     public TextField textFieldKeyword;
 
+    /**
+     * FXML element for the console text area in the "Console" tab.
+     */
     @FXML
     public TextArea textAreaConsole;
 
+    /**
+     * FXML element for the scene root.
+     */
     @FXML
     public VBox root;
 
@@ -117,19 +154,9 @@ public class Controller {
     private Application hostApplication = null;
 
     /**
-     * List of entries from the active search.
-     */
-    private List<Item> activeSearchResult;
-
-    /**
-     * The query used to initiate this search.
-     */
-    private String activeSearchKeyword;
-
-    /**
-     * @author Derppening
-     *
      * Listener for tab change events.
+     *
+     * @author Derppening
      */
     private class OnTabChangeListener implements ChangeListener<Tab> {
 
@@ -156,11 +183,11 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Sets the reference of the host application.
      *
      * @param app Current instance of {@link javafx.application.Application}.
+     *
+     * @author Derppening
      */
     void setHostApplication(@NotNull Application app) {
         this.hostApplication = app;
@@ -184,9 +211,9 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Invoked when the "About the Team" menu item is clicked.
+     *
+     * @author Derppening
      */
     @FXML
     public void actionDisplayTeamInfo() {
@@ -194,9 +221,9 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Invoked when "Close" menu item is clicked.
+     *
+     * @author Derppening
      */
     @FXML
     public void actionClose() {
@@ -204,9 +231,9 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Invoked when "Quit" menu item is clicked.
+     *
+     * @author Derppening
      */
     @FXML
     public void actionQuit() {
@@ -222,9 +249,6 @@ public class Controller {
 
         List<Item> result = scraper.scrape(textFieldKeyword.getText());
         if (result != null) {
-            activeSearchResult = result;
-            activeSearchKeyword = textFieldKeyword.getText();
-
             SearchRecord.push(textFieldKeyword.getText(), result);
 
             clearConsole();
@@ -237,9 +261,9 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Called when "Last Search" menu item is clicked.
+     *
+     * @author Derppening
      */
     @FXML
     public void actionLastSearch() {
@@ -256,9 +280,9 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Called when an entry in the combo box is selected.
+     *
+     * @author Derppening
      */
     @FXML
     public void actionComboBoxSelect() {
@@ -303,13 +327,13 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Helper function for mapping a {@link SearchRecord} data into {@link XYChart.Series} for displaying
      * on the chart.
      *
      * @param record Record to map into a series.
      * @return {@link XYChart.Series} containing a list of average prices per day.
+     *
+     * @author Derppening
      */
     private XYChart.Series<String, Double> mapDataToSeries(SearchRecord record) {
         XYChart.Series<String, Double> series = new XYChart.Series<>();
@@ -336,12 +360,12 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Set the color of the area chart.
      *
      * @param series The series of data points to format.
      * @param hData The data point to highlight.
+     *
+     * @author Derppening
      */
     private void setAreaChartColors(List<XYChart.Data<String, Double>> series, XYChart.Data<String, Double> hData) {
         series.forEach(data -> data.getNode().setStyle(null));
@@ -355,6 +379,8 @@ public class Controller {
      *
      * @param items List of items to serialize.
      * @return Items serialized in the format "$title\t$price\t$portal\t$url".
+     *
+     * @author Derppening, dipsywong98
      */
     private static String serializeItems(List<Item> items) {
         StringBuilder output = new StringBuilder();
@@ -372,9 +398,9 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Updates the search record combo box from {@link SearchRecord}.
+     *
+     * @author Derppening
      */
     private void updateRecordComboBox() {
         searchRecordComboBox.getSelectionModel().clearSelection();
@@ -388,46 +414,42 @@ public class Controller {
     }
 
     /**
-     * @author dipsywong98
-     *
      * clear console
+     *
+     * @author dipsywong98
      */
     private void clearConsole() {
         textAreaConsole.setText("");
     }
 
     /**
-     * @author dipsywong98
-     *
      * append the str to console
      *
      * @param str the appended string
+     *
+     * @author dipsywong98
      */
     private void printConsole(String str) {
         textAreaConsole.appendText(str);
     }
 
     /**
-     * @author dipsywong98
-     *
      * print out the most result/ loaded search result
+     *
+     * @author dipsywong98
      */
     private void printActiveSearchResult() {
-        if (activeSearchResult == null) return;
-        String output = textAreaConsole.getText() + serializeItems(activeSearchResult);
+        String output = textAreaConsole.getText() + serializeItems(SearchRecord.peek().getItems());
         textAreaConsole.setText(output);
     }
 
     /**
-     * @author dipsywong98
-     *
      * Called when going to save
+     *
+     * @author dipsywong98
      */
     @FXML
     public void actionSave() {
-//        System.out.println(activeSearchResultArray.toString());
-//        System.out.println(outputJson);
-
         Window stage = root.getScene().getWindow();
 
         FileChooser fileChooser = new FileChooser();
@@ -443,18 +465,18 @@ public class Controller {
     }
 
     /**
-     * @author dipsywong98
-     *
      * Advance2 save the search record
      *
      * @param file .3111 file target to save to
-     * @throws IOException
+     * @throws IOException if the file cannot be saved
+     *
+     * @author dipsywong98
      */
     public void saveFile(File file) throws IOException {
-        JSONArray activeSearchResultArray = new JSONArray(activeSearchResult);
+        SearchRecord record = SearchRecord.peek();
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("keyword", activeSearchKeyword);
-        jsonObject.put("result", activeSearchResultArray);
+        jsonObject.put("keyword", record.getKeyword());
+        jsonObject.put("result", record.getItems());
         String outputJson = jsonObject.toString();
 
         if (!file.getName().contains(".")) {
@@ -467,9 +489,9 @@ public class Controller {
     }
 
     /**
-     * @author dipsywong98
-     *
      * Called when going to open
+     *
+     * @author dipsywong98
      */
     @FXML
     public void actionOpen() {
@@ -488,36 +510,38 @@ public class Controller {
     }
 
     /**
-     * @author dipsywong98
-     *
      * Advance2 load search history
      *
      * @param file the .3111 file to load
      * @throws IOException if an I/O error occurred while reading the file.
+     *
+     * @author dipsywong98
      */
     public void openFile(File file) throws IOException {
         String inputJson = readFile(file);
         JSONObject inputObject = new JSONObject(inputJson);
-        activeSearchKeyword = inputObject.optString("keyword");
         JSONArray result = (JSONArray) inputObject.get("result");
-        activeSearchResult = new ArrayList<>();
-        for (int i = 0; i < result.length(); i++) {
-//                    activeSearchResult.add((Item)result.get(i));
-            activeSearchResult.add(new Item(result.getJSONObject(i)));
+
+        ArrayList<Item> results = new ArrayList<>();
+        for (int i = 0; i < result.length(); ++i) {
+            results.add(new Item(result.getJSONObject(i)));
         }
+
+        SearchRecord.push(inputObject.optString("keyword"), results);
+
         clearConsole();
         printConsole("--Data Loading from " + file.getAbsolutePath() + "--\n");
         printActiveSearchResult();
     }
 
     /**
-     * @author dipsywong98
-     *
      * Read file into string
      *
      * @param file file to read
      * @return string in file
      * @throws IOException if an I/O error occurred while reading the file.
+     *
+     * @author dipsywong98
      */
     private String readFile(File file) throws IOException {
         FileInputStream inputStream = new FileInputStream(file);
@@ -533,44 +557,53 @@ public class Controller {
     }
 
     /**
-     * @author dipsywong98
-     *
      * For testing advance 2, create some result
      *
      * @return the new search result
+     *
+     * @author dipsywong98
      */
     public List<Item> testGenerateDummieResult() {
-        activeSearchResult = new ArrayList<>();
+        ArrayList<Item> results = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Item item = new Item();
             item.setPortal("some portal");
             item.setPrice(i);
             item.setTitle("item" + i);
             item.setUrl("http://some.link");
-            activeSearchResult.add(item);
+            results.add(item);
         }
-        activeSearchKeyword = "testing";
-        return activeSearchResult;
+
+        SearchRecord.push("testing", results);
+        return SearchRecord.peek().getItems();
     }
 
     /**
-     * @author dipsywong98
-     *
      * For testing advance2, make the active search empty
+     *
+     * @author dipsywong98
      */
     public void testClearActiveResult() {
-        activeSearchResult = new ArrayList<>();
-        activeSearchKeyword = "";
+        Class<?> clazz = SearchRecord.class;
+        try {
+            Field recordsField = clazz.getDeclaredField("lastSearch");
+            recordsField.setAccessible(true);
+
+            @SuppressWarnings("unchecked") ObservableList<SearchRecord> record = ((ObservableList<SearchRecord>) recordsField.get(null));
+            record.remove(record.size() - 1);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
-     * @author dipsywong98
-     *
      * For testing to take the active search result
      *
      * @return the current active search result
+     *
+     * @author dipsywong98
      */
     public List<Item> testPeekSearchResult() {
-        return activeSearchResult;
+        return SearchRecord.peek().getItems();
     }
 }

@@ -12,10 +12,25 @@ import org.json.JSONObject;
  * Data representing a scraped listing.
  */
 public class Item {
+    /**
+     * Title of the scraped item.
+     */
     private String title;
+    /**
+     * Price of the scraped item.
+     */
     private double price;
+    /**
+     * URL of the scraped item.
+     */
     private String url;
+    /**
+     * Portal where the scraped item is from.
+     */
     private String portal;
+    /**
+     * Time when the scraped item is hosted on the portal.
+     */
     private Instant time;
 
     /**
@@ -27,11 +42,11 @@ public class Item {
     }
 
     /**
-     * @author dipsywong98
-     *
      * Construct Item from json object
      *
      * @param rawItem in .3111 json object
+     *
+     * @author dipsywong98
      */
     public Item(JSONObject rawItem) {
         if (rawItem.has("title")) setTitle(rawItem.optString("title"));
@@ -98,6 +113,8 @@ public class Item {
      * Returns the portal the item is scraped from.
      *
      * @return Portal of the item, or null if the portal is not set.
+     *
+     * @author Derppening
      */
     public @Nullable String getPortal() {
         return portal;
@@ -113,19 +130,17 @@ public class Item {
     }
 
     /**
-     * @author Derppening
-     *
      * Returns the time when this item is posted to the portal.
      *
      * @return Time the listing is posted, or null if the data is not available for this listing.
+     *
+     * @author Derppening
      */
     public @Nullable Instant getTime() {
         return time;
     }
 
     /**
-     * @author Derppening
-     *
      * Sets the time this item is listed in the portal.
      *
      * @param time New time when the item is listed in the portal.

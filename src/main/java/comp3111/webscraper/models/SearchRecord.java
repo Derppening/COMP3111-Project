@@ -11,9 +11,9 @@ import java.time.Instant;
 import java.util.*;
 
 /**
- * @author Derppening
- *
  * Container for storing previous searches. Modeled similar to a {@link java.util.Stack}.
+ *
+ * @author Derppening
  */
 public class SearchRecord {
     /**
@@ -112,6 +112,8 @@ public class SearchRecord {
     }
 
     /**
+     * Obtains a read-only view of all search records.
+     *
      * @return Read-only view of the search records.
      */
     public static @NotNull List<SearchRecord> view() {
@@ -128,6 +130,8 @@ public class SearchRecord {
     }
 
     /**
+     * Gets the time when the record is saved.
+     *
      * @return Time when this record is saved into the stack.
      */
     public Instant getTimeSaved() {
@@ -135,6 +139,8 @@ public class SearchRecord {
     }
 
     /**
+     * Get the items associated with the search.
+     *
      * @return List of items scraped by this query.
      */
     public List<Item> getItems() {
@@ -142,6 +148,8 @@ public class SearchRecord {
     }
 
     /**
+     * Gets the keyword used for the search.
+     *
      * @return Keyword used to initiate this query.
      */
     public String getKeyword() {
