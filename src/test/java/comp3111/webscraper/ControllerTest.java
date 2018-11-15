@@ -126,7 +126,6 @@ public class ControllerTest extends ApplicationTest {
         push(KeyCode.T);
         push(KeyCode.ENTER);
         WaitForAsyncUtils.sleep(4, TimeUnit.SECONDS);
-        assertNotNull(controller.testPeekSearchResult());
 
         controller.openFile(realfile);
         String load = new JSONArray(controller.testPeekSearchResult()).toString();

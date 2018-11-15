@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.XYChart;
@@ -24,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -115,16 +117,6 @@ public class Controller {
      * Reference to the JavaFX application.
      */
     private Application hostApplication = null;
-
-    /**
-     * List of entries from the active search.
-     */
-    private List<Item> activeSearchResult;
-
-    /**
-     * The query used to initiate this search.
-     */
-    private String activeSearchKeyword;
 
     /**
      * @author Derppening
@@ -222,9 +214,6 @@ public class Controller {
 
         List<Item> result = scraper.scrape(textFieldKeyword.getText());
         if (result != null) {
-            activeSearchResult = result;
-            activeSearchKeyword = textFieldKeyword.getText();
-
             SearchRecord.push(textFieldKeyword.getText(), result);
 
             clearConsole();
@@ -413,8 +402,7 @@ public class Controller {
      * print out the most result/ loaded search result
      */
     private void printActiveSearchResult() {
-        if (activeSearchResult == null) return;
-        String output = textAreaConsole.getText() + serializeItems(activeSearchResult);
+        String output = textAreaConsole.getText() + serializeItems(SearchRecord.peek().getItems());
         textAreaConsole.setText(output);
     }
 
@@ -448,10 +436,10 @@ public class Controller {
      * @throws IOException
      */
     public void saveFile(File file) throws IOException {
-        JSONArray activeSearchResultArray = new JSONArray(activeSearchResult);
+        SearchRecord record = SearchRecord.peek();
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("keyword", activeSearchKeyword);
-        jsonObject.put("result", activeSearchResultArray);
+        jsonObject.put("keyword", record.getKeyword());
+        jsonObject.put("result", record.getItems());
         String outputJson = jsonObject.toString();
 
         if (!file.getName().contains(".")) {
@@ -495,12 +483,15 @@ public class Controller {
     public void openFile(File file) throws IOException {
         String inputJson = readFile(file);
         JSONObject inputObject = new JSONObject(inputJson);
-        activeSearchKeyword = inputObject.optString("keyword");
         JSONArray result = (JSONArray) inputObject.get("result");
-        activeSearchResult = new ArrayList<>();
-        for (int i = 0; i < result.length(); i++) {
-            activeSearchResult.add(new Item(result.getJSONObject(i)));
+
+        ArrayList<Item> results = new ArrayList<>();
+        for (int i = 0; i < result.length(); ++i) {
+            results.add(new Item(result.getJSONObject(i)));
         }
+
+        SearchRecord.push(inputObject.optString("keyword"), results);
+
         clearConsole();
         printConsole("--Data Loading from " + file.getAbsolutePath() + "--\n");
         printActiveSearchResult();
@@ -536,17 +527,18 @@ public class Controller {
      * @return the new search result
      */
     public List<Item> testGenerateDummieResult() {
-        activeSearchResult = new ArrayList<>();
+        ArrayList<Item> results = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Item item = new Item();
             item.setPortal("some portal");
             item.setPrice(i);
             item.setTitle("item" + i);
             item.setUrl("http://some.link");
-            activeSearchResult.add(item);
+            results.add(item);
         }
-        activeSearchKeyword = "testing";
-        return activeSearchResult;
+
+        SearchRecord.push("testing", results);
+        return SearchRecord.peek().getItems();
     }
 
     /**
@@ -555,8 +547,14 @@ public class Controller {
      * For testing advance2, make the active search empty
      */
     public void testClearActiveResult() {
-        activeSearchResult = new ArrayList<>();
-        activeSearchKeyword = "";
+        Class<?> clazz = SearchRecord.class;
+        try {
+            Field recordsField = clazz.getDeclaredField("lastSearch");
+            recordsField.setAccessible(true);
+            ((ObservableList<SearchRecord>) recordsField.get(null)).remove(((ObservableList<SearchRecord>) recordsField.get(null)).size() - 1);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -567,6 +565,6 @@ public class Controller {
      * @return the current active search result
      */
     public List<Item> testPeekSearchResult() {
-        return activeSearchResult;
+        return SearchRecord.peek().getItems();
     }
 }
