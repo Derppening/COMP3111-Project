@@ -183,11 +183,11 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Sets the reference of the host application.
      *
      * @param app Current instance of {@link javafx.application.Application}.
+     *
+     * @author Derppening
      */
     void setHostApplication(@NotNull Application app) {
         this.hostApplication = app;
@@ -588,7 +588,9 @@ public class Controller {
         try {
             Field recordsField = clazz.getDeclaredField("lastSearch");
             recordsField.setAccessible(true);
-            ((ObservableList<SearchRecord>) recordsField.get(null)).remove(((ObservableList<SearchRecord>) recordsField.get(null)).size() - 1);
+
+            @SuppressWarnings("unchecked") ObservableList<SearchRecord> record = ((ObservableList<SearchRecord>) recordsField.get(null));
+            record.remove(record.size() - 1);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace();
         }
