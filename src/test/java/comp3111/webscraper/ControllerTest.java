@@ -76,10 +76,6 @@ public class ControllerTest extends ApplicationTest {
         stage.setTitle("WebScrapper");
         stage.show();
         controller = loader.getController();
-//        Flow flow = new Flow(Controller.class);
-//        FlowHandler handler = flow.createHandler();
-//        FlowView view = handler.getCurrentView();
-//        controller = (Controller) view.getViewContext().getController();
     }
 
     @Test
@@ -108,7 +104,6 @@ public class ControllerTest extends ApplicationTest {
         String original = new JSONArray(controller.testPeekSearchResult()).toString();
         clickOn("#menuFile");
         clickOn("#labelSave");
-//        WaitForAsyncUtils.waitForFxEvents();
         push(KeyCode.SHIFT, KeyCode.DIGIT8);
         push(KeyCode.DECIMAL);
         push(KeyCode.SHIFT, KeyCode.DIGIT8);

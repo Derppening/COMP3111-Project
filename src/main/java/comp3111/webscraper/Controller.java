@@ -425,9 +425,6 @@ public class Controller {
      */
     @FXML
     public void actionSave() {
-//        System.out.println(activeSearchResultArray.toString());
-//        System.out.println(outputJson);
-
         Window stage = root.getScene().getWindow();
 
         FileChooser fileChooser = new FileChooser();
@@ -502,7 +499,6 @@ public class Controller {
         JSONArray result = (JSONArray) inputObject.get("result");
         activeSearchResult = new ArrayList<>();
         for (int i = 0; i < result.length(); i++) {
-//                    activeSearchResult.add((Item)result.get(i));
             activeSearchResult.add(new Item(result.getJSONObject(i)));
         }
         clearConsole();
