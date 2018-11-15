@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author Derppening
- *
  * Container class holding team member information.
+ *
+ * @author Derppening
  */
 public class TeamMemberInfo {
     /**

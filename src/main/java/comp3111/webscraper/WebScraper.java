@@ -26,19 +26,19 @@ import org.json.JSONObject;
 /**
  * WebScraper provide a sample code that scrape web content. After it is constructed, you can call the method scrape with a keyword,
  * the client will go to the default url and parse the page by looking at the HTML DOM.
- * <br/>
+ * <br>
  * In this particular sample code, it access to craigslist.org. You can directly search on an entry by typing the URL
- * <br/>
+ * <br>
  * https://newyork.craigslist.org/search/sss?sort=rel&amp;query=KEYWORD
- * <br/>
+ * <br>
  * where KEYWORD is the keyword you want to search.
- * <br/>
+ * <br>
  * Assume you are working on Chrome, paste the url into your browser and press F12 to load the source code of the HTML. You might be freak
  * out if you have never seen a HTML source code before. Keep calm and move on. Press Ctrl-Shift-C (or CMD-Shift-C if you got a mac) and move your
  * mouse cursor around, different part of the HTML code and the corresponding the HTML objects will be highlighted. Explore your HTML page from
  * body &rarr; section class="page-container" &rarr; form id="searchform" &rarr; div class="content" &rarr; ul class="rows" &rarr; any one of the multiple
  * li class="result-row" &rarr; p class="result-info". You might see something like this:
- * <br/>
+ * <br>
  * <pre>
  * {@code
  *    <p class="result-info">
@@ -65,7 +65,7 @@ import org.json.JSONObject;
  *   </p>
  * }
  * </pre>
- * <br/>
+ * <br>
  * The code
  * <pre>
  * {@code
@@ -86,7 +86,13 @@ public class WebScraper {
             .toFormatter()
             .withZone(TimeZone.getDefault().toZoneId());
 
+    /**
+     * Default URL to scrape from.
+     */
     private static final String DEFAULT_URL = "https://newyork.craigslist.org/";
+    /**
+     * Client to use for scraping.
+     */
     private WebClient client;
 
     /**
@@ -99,13 +105,13 @@ public class WebScraper {
     }
 
     /**
-     * @author dipsywong98
-     *
      * read the string in string reader
      *
      * @param rd reader that holds the string
      * @return extract string from read
      * @throws IOException if an I/O error occurs when reading.
+     *
+     * @author dipsywong98
      */
     private static String readAll(Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -117,14 +123,14 @@ public class WebScraper {
     }
 
     /**
-     * @author dipsywong98
-     *
      * convert json from url into jsonobject
      *
      * @param url where the json stored
      * @return the corresponding object represented by the json at the url
      * @throws IOException if an I/O error occurs when reading the URL.
      * @throws JSONException If the scraped JSON is syntactically incorrect.
+     *
+     * @author dipsywong98
      */
     public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
         try (InputStream is = new URL(url).openStream()) {
@@ -135,12 +141,12 @@ public class WebScraper {
     }
 
     /**
-     * @author dipsywong98, kevinw
-     *
      * The only method implemented in this class, to scrape web content from the craigslist
      *
      * @param keyword - the keyword you want to search
      * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
+     *
+     * @author dipsywong98, kevinw
      */
     public List<Item> scrape(String keyword) {
         List<Item> result = new Vector<>();
@@ -168,25 +174,25 @@ public class WebScraper {
     }
 
     /**
-     * @author dipsywong98
-     *
      * obtain a url for scrapping
      *
      * @param keyword keyword for search
      * @return url for scrapping
      * @throws UnsupportedEncodingException if UTF-8 encoding is not supported.
+     *
+     * @author dipsywong98
      */
     private String obtainOldScrapeUrl(String keyword) throws UnsupportedEncodingException {
         return DEFAULT_URL + "search/sss?sort=rel&query=" + URLEncoder.encode(keyword, "UTF-8");
     }
 
     /**
-     * @author dipsywong98
-     *
      * Scrape the old site
      *
      * @param searchUrl in the old site
      * @return the list of items scrapped
+     *
+     * @author dipsywong98
      */
     private List<Item> oldScrapeByUrl(String searchUrl) {
         try {
@@ -225,38 +231,38 @@ public class WebScraper {
     }
 
     /**
-     * @author dipsywong98
-     *
      * Perform all tasks including pagination on new site
      *
      * @param keyword - the keyword you want to search
      * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
      * @throws UnsupportedEncodingException if UTF-8 encoding is not supported
+     *
+     * @author dipsywong98
      */
     private List<Item> newScrape(String keyword) throws UnsupportedEncodingException {
         return newScrapeByUrl(obtainNewScrapeUrl(keyword));
     }
 
     /**
-     * @author dipsywong98
-     *
      * get a new site search url
      *
      * @param keyword query string
      * @return a url in new site for scrapping
      * @throws UnsupportedEncodingException if UTF-8 encoding is not supported
+     *
+     * @author dipsywong98
      */
     private String obtainNewScrapeUrl(String keyword) throws UnsupportedEncodingException {
         return "http://api.walmartlabs.com/v1/search?apiKey=knd7pc96vzfvzjb7h6ywz74x&query=" + URLEncoder.encode(keyword, "UTF-8");
     }
 
     /**
-     * @author dipsywong98
-     *
      * perform the scrapping task in new site
      *
      * @param url scrapping url in new site, actually is the api endpoint
      * @return the list of item obtained
+     *
+     * @author dipsywong98
      */
     private List<Item> newScrapeByUrl(String url) {
         try {

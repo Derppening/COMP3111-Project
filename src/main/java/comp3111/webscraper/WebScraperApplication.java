@@ -1,6 +1,3 @@
-/**
- *
- */
 package comp3111.webscraper;
 
 import javafx.application.Application;
@@ -11,8 +8,6 @@ import javafx.stage.Stage;
 
 
 /**
- * @author kevinw
- *
  * The entry point of the entire program. It is quite unlikely you need to change this file. But you can change it if you want :)
  *
  * GUI
@@ -33,11 +28,17 @@ import javafx.stage.Stage;
  * function will do is to load this ui.fxml into a GUI application. The ui.fxml has specified that "all event will be handled by the class - 
  * Controller". Let's trace the function void start which will be called by the framework shortly after the program start.  
  *
- *
+ * @author kevinw
  */
 public class WebScraperApplication extends Application {
 
+    /**
+     * Path to the UI FXML file.
+     */
     private static final String UI_FILE = "/ui.fxml";  //It is very important that you put the file under folder src/main/resources/
+    /**
+     * Reference to the primary stage.
+     */
     private Stage primaryStage = null;
 
     /**

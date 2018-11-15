@@ -40,10 +40,9 @@ import java.util.stream.Stream;
 
 
 /**
- * @author kevinw
- * <p>
- * <p>
  * Controller class that manage GUI interaction. Please see document about JavaFX for details.
+ *
+ * @author kevinw
  */
 public class Controller {
 
@@ -72,39 +71,75 @@ public class Controller {
         SEVEN_DAY_INSTANTS = Collections.unmodifiableList(instants);
     }
 
+    /**
+     * FXML element for TrendTab.
+     */
     @FXML
     public Tab trendTab;
 
+    /**
+     * FXML element for the search record combo box in the Trend Tab.
+     */
     @FXML
     public ComboBox<String> searchRecordComboBox;
 
+    /**
+     * FXML element for the area chart in the Trend Tab.
+     */
     @FXML
     public AreaChart<String, Double> areaChart;
 
+    /**
+     * FXML element for the pane containing all tabs.
+     */
     @FXML
     public TabPane tabPane;
 
+    /**
+     * FXML element for "Last Search" item in the "File" menu.
+     */
     @FXML
     public MenuItem itemLastSearch;
 
+    /**
+     * FXML element for "Total" label in the "Summary" tab.
+     */
     @FXML
     public Label labelCount;
 
+    /**
+     * FXML element for "AvgPrice" label in the "Summary" tab.
+     */
     @FXML
     public Label labelPrice;
 
+    /**
+     * FXML element for the "Lowest" label in the "Summary" tab.
+     */
     @FXML
     public Hyperlink labelMin;
 
+    /**
+     * FXML element for the "Latest" label in the "Summary" tab.
+     */
     @FXML
     public Hyperlink labelLatest;
 
+    /**
+     * FXML element for the keyword text field.
+     */
     @FXML
     public TextField textFieldKeyword;
 
+    /**
+     * FXML element for the console text area in the "Console" tab.
+     */
     @FXML
     public TextArea textAreaConsole;
 
+    /**
+     * FXML element for the scene root.
+     */
     @FXML
     public VBox root;
 
@@ -119,9 +154,9 @@ public class Controller {
     private Application hostApplication = null;
 
     /**
-     * @author Derppening
-     *
      * Listener for tab change events.
+     *
+     * @author Derppening
      */
     private class OnTabChangeListener implements ChangeListener<Tab> {
 
@@ -176,9 +211,9 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Invoked when the "About the Team" menu item is clicked.
+     *
+     * @author Derppening
      */
     @FXML
     public void actionDisplayTeamInfo() {
@@ -186,9 +221,9 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Invoked when "Close" menu item is clicked.
+     *
+     * @author Derppening
      */
     @FXML
     public void actionClose() {
@@ -196,9 +231,9 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Invoked when "Quit" menu item is clicked.
+     *
+     * @author Derppening
      */
     @FXML
     public void actionQuit() {
@@ -226,9 +261,9 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Called when "Last Search" menu item is clicked.
+     *
+     * @author Derppening
      */
     @FXML
     public void actionLastSearch() {
@@ -245,9 +280,9 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Called when an entry in the combo box is selected.
+     *
+     * @author Derppening
      */
     @FXML
     public void actionComboBoxSelect() {
@@ -292,13 +327,13 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Helper function for mapping a {@link SearchRecord} data into {@link XYChart.Series} for displaying
      * on the chart.
      *
      * @param record Record to map into a series.
      * @return {@link XYChart.Series} containing a list of average prices per day.
+     *
+     * @author Derppening
      */
     private XYChart.Series<String, Double> mapDataToSeries(SearchRecord record) {
         XYChart.Series<String, Double> series = new XYChart.Series<>();
@@ -325,12 +360,12 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Set the color of the area chart.
      *
      * @param series The series of data points to format.
      * @param hData The data point to highlight.
+     *
+     * @author Derppening
      */
     private void setAreaChartColors(List<XYChart.Data<String, Double>> series, XYChart.Data<String, Double> hData) {
         series.forEach(data -> data.getNode().setStyle(null));
@@ -344,6 +379,8 @@ public class Controller {
      *
      * @param items List of items to serialize.
      * @return Items serialized in the format "$title\t$price\t$portal\t$url".
+     *
+     * @author Derppening, dipsywong98
      */
     private static String serializeItems(List<Item> items) {
         StringBuilder output = new StringBuilder();
@@ -361,9 +398,9 @@ public class Controller {
     }
 
     /**
-     * @author Derppening
-     *
      * Updates the search record combo box from {@link SearchRecord}.
+     *
+     * @author Derppening
      */
     private void updateRecordComboBox() {
         searchRecordComboBox.getSelectionModel().clearSelection();
@@ -377,29 +414,29 @@ public class Controller {
     }
 
     /**
-     * @author dipsywong98
-     *
      * clear console
+     *
+     * @author dipsywong98
      */
     private void clearConsole() {
         textAreaConsole.setText("");
     }
 
     /**
-     * @author dipsywong98
-     *
      * append the str to console
      *
      * @param str the appended string
+     *
+     * @author dipsywong98
      */
     private void printConsole(String str) {
         textAreaConsole.appendText(str);
     }
 
     /**
-     * @author dipsywong98
-     *
      * print out the most result/ loaded search result
+     *
+     * @author dipsywong98
      */
     private void printActiveSearchResult() {
         String output = textAreaConsole.getText() + serializeItems(SearchRecord.peek().getItems());
@@ -407,9 +444,9 @@ public class Controller {
     }
 
     /**
-     * @author dipsywong98
-     *
      * Called when going to save
+     *
+     * @author dipsywong98
      */
     @FXML
     public void actionSave() {
@@ -428,12 +465,12 @@ public class Controller {
     }
 
     /**
-     * @author dipsywong98
-     *
      * Advance2 save the search record
      *
      * @param file .3111 file target to save to
-     * @throws IOException
+     * @throws IOException if the file cannot be saved
+     *
+     * @author dipsywong98
      */
     public void saveFile(File file) throws IOException {
         SearchRecord record = SearchRecord.peek();
@@ -452,9 +489,9 @@ public class Controller {
     }
 
     /**
-     * @author dipsywong98
-     *
      * Called when going to open
+     *
+     * @author dipsywong98
      */
     @FXML
     public void actionOpen() {
@@ -473,12 +510,12 @@ public class Controller {
     }
 
     /**
-     * @author dipsywong98
-     *
      * Advance2 load search history
      *
      * @param file the .3111 file to load
      * @throws IOException if an I/O error occurred while reading the file.
+     *
+     * @author dipsywong98
      */
     public void openFile(File file) throws IOException {
         String inputJson = readFile(file);
@@ -498,13 +535,13 @@ public class Controller {
     }
 
     /**
-     * @author dipsywong98
-     *
      * Read file into string
      *
      * @param file file to read
      * @return string in file
      * @throws IOException if an I/O error occurred while reading the file.
+     *
+     * @author dipsywong98
      */
     private String readFile(File file) throws IOException {
         FileInputStream inputStream = new FileInputStream(file);
@@ -520,11 +557,11 @@ public class Controller {
     }
 
     /**
-     * @author dipsywong98
-     *
      * For testing advance 2, create some result
      *
      * @return the new search result
+     *
+     * @author dipsywong98
      */
     public List<Item> testGenerateDummieResult() {
         ArrayList<Item> results = new ArrayList<>();
@@ -542,9 +579,9 @@ public class Controller {
     }
 
     /**
-     * @author dipsywong98
-     *
      * For testing advance2, make the active search empty
+     *
+     * @author dipsywong98
      */
     public void testClearActiveResult() {
         Class<?> clazz = SearchRecord.class;
@@ -558,11 +595,11 @@ public class Controller {
     }
 
     /**
-     * @author dipsywong98
-     *
      * For testing to take the active search result
      *
      * @return the current active search result
+     *
+     * @author dipsywong98
      */
     public List<Item> testPeekSearchResult() {
         return SearchRecord.peek().getItems();

@@ -10,11 +10,16 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 /**
- * @author Derppening
- *
  * Controller for actions invoked from the menu.
+ *
+ * @author Derppening
  */
 public class MenuController {
+    /**
+     * Default private constructor.
+     */
+    private MenuController() {}
+
     /**
      * Spawns a new JavaFX stage and display the team information there.
      */
