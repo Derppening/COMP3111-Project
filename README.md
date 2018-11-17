@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.com/Derppening/COMP3111-Project.svg?token=ECC8n6hE7n7DN6DCCDMi&branch=master)](https://travis-ci.com/Derppening/COMP3111-Project)
 
+[View Javadocs](https://derppening.github.io/COMP3111-Project/docs/)
+
 ## Task Distribution
 
 | Student | Basic Task | Advanced Task |
