@@ -5,11 +5,10 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../src/test">
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../../src/test/resources" type="java-test-resource" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="COMP3111-Project_main" />
+    <orderEntry type="module" module-name="COMP3111-Project.main" />
     <orderEntry type="library" name="Gradle: net.sourceforge.htmlunit:htmlunit:2.31" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:16.0.3" level="project" />
     <orderEntry type="library" name="Gradle: org.json:json:20180813" level="project" />
@@ -43,5 +42,5 @@
     <orderEntry type="library" name="Gradle: xml-apis:xml-apis:1.4.01" level="project" />
     <orderEntry type="library" name="Gradle: org.eclipse.jetty.websocket:websocket-api:9.4.10.v20180503" level="project" />
   </component>
-  <component name="TestModuleProperties" production-module="COMP3111-Project_main" />
+  <component name="TestModuleProperties" production-module="COMP3111-Project.main" />
 </module>

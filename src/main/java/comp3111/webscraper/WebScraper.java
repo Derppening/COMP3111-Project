@@ -1,10 +1,7 @@
 package comp3111.webscraper;
 
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlTime;
+import com.gargoylesoftware.htmlunit.html.*;
 
 import java.io.*;
 import java.net.URL;
@@ -168,7 +165,7 @@ public class WebScraper {
      * @param keyword - the keyword you want to search
      * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
      * @throws UnsupportedEncodingException if UTF-8 encoding is not supported.
-     * 
+     *
      * @author dipsywong98
      */
     private List<Item> oldScrape(String keyword) throws UnsupportedEncodingException {
@@ -192,38 +189,52 @@ public class WebScraper {
      * Scrape the old site
      *
      * @param searchUrl in the old site
-     * @return the list of items scrapped
+     * @return the list of items scrapped (with pagination handled). Scrapping update in terminal.
      *
-     * @author dipsywong98
+     * @author dipsywong98, kevinCrylz
      */
     private List<Item> oldScrapeByUrl(String searchUrl) {
         try {
             HtmlPage page = client.getPage(searchUrl);
-
-            List<?> items = page.getByXPath("//li[@class='result-row']");
-
+            //System.out.println(searchUrl);
             Vector<Item> result = new Vector<>();
 
-            for (Object elem : items) {
-                HtmlElement htmlItem = (HtmlElement) elem;
-                HtmlAnchor itemAnchor = htmlItem.getFirstByXPath(".//p[@class='result-info']/a");
-                HtmlElement spanPrice = htmlItem.getFirstByXPath(".//a/span[@class='result-price']");
-                HtmlTime itemTime = htmlItem.getFirstByXPath(".//p[@class='result-info']/time");
+            HtmlAnchor pageAnchor;
+            int cnt_page = 1;
 
-                // It is possible that an item doesn't have any price, we set the price to 0.0
-                // in this case
-                String itemPrice = spanPrice == null ? "0.0" : spanPrice.asText();
+            do {
+                System.out.println("Now scrapping craigslist:  page " + cnt_page++);
 
-                Item item = new Item();
-                item.setTitle(itemAnchor.asText());
-                item.setUrl(itemAnchor.getHrefAttribute());
-                item.setTime(DATE_TIME_FMT.parse(itemTime.getAttribute("datetime"), Instant::from));
+                List<?> items = page.getByXPath("//li[@class='result-row']");
 
-                item.setPrice(new Double(itemPrice.replace("$", "")));
-                item.setPortal("craigslist");
+                if (items.size() == 0) break;
 
-                result.add(item);
-            }
+                for (Object elem : items) {
+                    HtmlElement htmlItem = (HtmlElement) elem;
+                    HtmlAnchor itemAnchor = htmlItem.getFirstByXPath(".//p[@class='result-info']/a");
+                    HtmlElement spanPrice = htmlItem.getFirstByXPath(".//a/span[@class='result-price']");
+                    HtmlTime itemTime = htmlItem.getFirstByXPath(".//p[@class='result-info']/time");
+
+                    // It is possible that an item doesn't have any price, we set the price to 0.0
+                    // in this case
+                    String itemPrice = spanPrice == null ? "0.0" : spanPrice.asText();
+
+                    Item item = new Item();
+                    item.setTitle(itemAnchor.asText());
+                    item.setUrl(itemAnchor.getHrefAttribute());
+                    item.setTime(DATE_TIME_FMT.parse(itemTime.getAttribute("datetime"), Instant::from));
+
+                    item.setPrice(new Double(itemPrice.replace("$", "")));
+                    item.setPortal("craigslist");
+
+                    result.add(item);
+                }
+                //System.out.println(items.size());
+
+                pageAnchor = page.getFirstByXPath("//a[@class='button next']");
+                page = client.getPage(searchUrl.substring(0, searchUrl.indexOf("/search")) + pageAnchor.getHrefAttribute());
+                //System.out.println(pageAnchor.getHrefAttribute());
+            } while (pageAnchor.getHrefAttribute().length() != 0 && cnt_page <6);
             client.close();
             return result;
         } catch (Exception e) {
