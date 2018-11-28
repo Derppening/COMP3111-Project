@@ -16,6 +16,7 @@
 
 - This application is ran on a Windows Test Environment with Oracle JDK.
 - Basic Task 2: The external site is Walmart.
+- Basic Task 3: Pagination only handles 5 pages at maximum to speed up progress.
 - Basic Task 6: A hyperlink to the GitHub page is not required.
 - Basic Task 6: Assume that the "Close" button does not affect the Search History.
 - Basic Task 6: Assume that the "Last Search" action will remove the 2nd-to-last search record.
