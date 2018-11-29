@@ -196,7 +196,7 @@ public class WebScraper {
     private List<Item> oldScrapeByUrl(String searchUrl) {
         try {
             HtmlPage page = client.getPage(searchUrl);
-            //System.out.println(searchUrl);
+
             Vector<Item> result = new Vector<>();
 
             HtmlAnchor pageAnchor;
@@ -229,11 +229,9 @@ public class WebScraper {
 
                     result.add(item);
                 }
-                //System.out.println(items.size());
 
                 pageAnchor = page.getFirstByXPath("//a[@class='button next']");
                 page = client.getPage(searchUrl.substring(0, searchUrl.indexOf("/search")) + pageAnchor.getHrefAttribute());
-                //System.out.println(pageAnchor.getHrefAttribute());
             } while (pageAnchor.getHrefAttribute().length() != 0 && cnt_page <6);
             client.close();
             return result;
