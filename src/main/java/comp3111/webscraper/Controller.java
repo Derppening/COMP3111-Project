@@ -173,8 +173,8 @@ public class Controller {
          * Handles "Changed" events from tab change.
          *
          * @param observable Value which was changed.
-         * @param oldValue Originally focused tab.
-         * @param newValue New focused tab.
+         * @param oldValue   Originally focused tab.
+         * @param newValue   New focused tab.
          */
         @Override
         public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
@@ -195,7 +195,6 @@ public class Controller {
      * Sets the reference of the host application.
      *
      * @param app Current instance of {@link javafx.application.Application}.
-     *
      * @author Derppening
      */
     void setHostApplication(@NotNull Application app) {
@@ -204,7 +203,7 @@ public class Controller {
 
     /**
      * @author Derppening
-     *
+     * <p>
      * Default initializer.
      */
     @FXML
@@ -291,6 +290,9 @@ public class Controller {
         textFieldKeyword.setText(lastSearch.getKeyword());
         textAreaConsole.setText(serializeItems(lastSearch.getItems()));
 
+        updateHistogram(lastSearch.getKeyword(), lastSearch.getItems());
+        searchRecordComboBox.getSelectionModel().select(lastSearch.getKeyword());
+
         System.out.println("Loaded query \"" + lastSearch.getKeyword() + "\" from " + lastSearch.getTimeSaved().toString());
     }
 
@@ -346,8 +348,7 @@ public class Controller {
      * Called when there is a new search to update the distribution tab.
      *
      * @param keyword search keyword
-     * @param items List containing returned items of search result
-     *
+     * @param items   List containing returned items of search result
      * @author kevinCrylz
      */
     private void updateHistogram(String keyword, List<Item> items) {
@@ -368,28 +369,28 @@ public class Controller {
 
             barChartHistogram.getData().forEach(s ->
                     s.getData().forEach(data ->
-                        data.getNode().setOnMouseClicked(event -> {
-                            if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
-                                double lowPrice = Double.valueOf(data.getXValue().split("-")[0]);
-                                double highPrice = Double.valueOf(data.getXValue().split("-")[1]);
+                            data.getNode().setOnMouseClicked(event -> {
+                                if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
+                                    double lowPrice = Double.valueOf(data.getXValue().split("-")[0]);
+                                    double highPrice = Double.valueOf(data.getXValue().split("-")[1]);
 
-                                clearConsole();
+                                    clearConsole();
 
-                                if (lowPrice != highPrice) {
-                                    List<Item> filteredItems = items.parallelStream()
-                                            .filter(item -> item.getPrice() >= lowPrice)
-                                            .filter(item -> item.getPrice() < highPrice)
-                                            .collect(Collectors.toList());
+                                    if (lowPrice != highPrice) {
+                                        List<Item> filteredItems = items.parallelStream()
+                                                .filter(item -> item.getPrice() >= lowPrice)
+                                                .filter(item -> item.getPrice() < highPrice)
+                                                .collect(Collectors.toList());
 
-                                    textAreaConsole.setText(serializeItems(filteredItems));
-                                } else {
-                                    textAreaConsole.setText(serializeItems(items));
+                                        textAreaConsole.setText(serializeItems(filteredItems));
+                                    } else {
+                                        textAreaConsole.setText(serializeItems(items));
+                                    }
+
+                                    barChartHistogram.getData().forEach(s1 -> s1.getData().forEach(data1 -> data1.getNode().setStyle("-fx-bar-fill: orange")));
+                                    data.getNode().setStyle("-fx-bar-fill: #e5671d");
                                 }
-
-                                barChartHistogram.getData().forEach(s1 -> s1.getData().forEach(data1 -> data1.getNode().setStyle("-fx-bar-fill: orange")));
-                                data.getNode().setStyle("-fx-bar-fill: #e5671d");
-                            }
-                        })));
+                            })));
         }
     }
 
@@ -398,36 +399,35 @@ public class Controller {
      *
      * @param items Items returned from search
      * @return {@link XYChart.Series} containing a list of frequencies of ten price range.
-     *
      * @author kevinCrylz
      */
     private XYChart.Series<String, Number> checkFrequency(List<Item> items) {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
-        double lowPrice = Math.round((items.get(0).getPrice()-5)/10.0)*10;
-        double highPrice = Math.round((items.get(items.size()-1).getPrice()+5)/10.0)*10;
+        double lowPrice = Math.round((items.get(0).getPrice() - 5) / 10.0) * 10;
+        double highPrice = Math.round((items.get(items.size() - 1).getPrice() + 5) / 10.0) * 10;
         double d = (highPrice - lowPrice) / 10;
 
         if (lowPrice == highPrice) {
-            series.getData().add(new XYChart.Data<String, Number>(""+lowPrice+"-"+highPrice, items.size()));
+            series.getData().add(new XYChart.Data<>("" + lowPrice + "-" + highPrice, items.size()));
             return series;
         }
 
-        int cnt_data[] = new int[10];
+        int[] cnt_data = new int[10];
         double price;
 
         for (Item item : items) {
             price = item.getPrice();
             for (int i = 1; i <= 10; i++) {
-                if (price > highPrice - d*i) {
-                    cnt_data[10-i] += 1;
+                if (price > highPrice - d * i) {
+                    cnt_data[10 - i] += 1;
                     break;
                 }
             }
         }
 
-        for (int i=0; i<10; i++)
-            series.getData().add(new XYChart.Data<String, Number>(  ""+(lowPrice + d*i)+"-"+(lowPrice + d*(i+1)), cnt_data[i]));
+        for (int i = 0; i < 10; i++)
+            series.getData().add(new XYChart.Data<>("" + (lowPrice + d * i) + "-" + (lowPrice + d * (i + 1)), cnt_data[i]));
 
         return series;
     }
@@ -438,7 +438,6 @@ public class Controller {
      *
      * @param record Record to map into a series.
      * @return {@link XYChart.Series} containing a list of average prices per day.
-     *
      * @author Derppening
      */
     private XYChart.Series<String, Double> mapDataToSeries(SearchRecord record) {
@@ -469,8 +468,7 @@ public class Controller {
      * Set the color of the area chart.
      *
      * @param series The series of data points to format.
-     * @param hData The data point to highlight.
-     *
+     * @param hData  The data point to highlight.
      * @author Derppening
      */
     private void setAreaChartColors(List<XYChart.Data<String, Double>> series, XYChart.Data<String, Double> hData) {
@@ -485,7 +483,6 @@ public class Controller {
      *
      * @param items List of items to serialize.
      * @return Items serialized in the format "$title\t$price\t$portal\t$url".
-     *
      * @author Derppening, dipsywong98
      */
     private static String serializeItems(List<Item> items) {
@@ -532,7 +529,6 @@ public class Controller {
      * append the str to console
      *
      * @param str the appended string
-     *
      * @author dipsywong98
      */
     private void printConsole(String str) {
@@ -575,7 +571,6 @@ public class Controller {
      *
      * @param file .3111 file target to save to
      * @throws IOException if the file cannot be saved
-     *
      * @author dipsywong98
      */
     public void saveFile(File file) throws IOException {
@@ -620,7 +615,6 @@ public class Controller {
      *
      * @param file the .3111 file to load
      * @throws IOException if an I/O error occurred while reading the file.
-     *
      * @author dipsywong98
      */
     public void openFile(File file) throws IOException {
@@ -646,7 +640,6 @@ public class Controller {
      * @param file file to read
      * @return string in file
      * @throws IOException if an I/O error occurred while reading the file.
-     *
      * @author dipsywong98
      */
     private String readFile(File file) throws IOException {
@@ -666,7 +659,6 @@ public class Controller {
      * For testing advance 2, create some result
      *
      * @return the new search result
-     *
      * @author dipsywong98
      */
     public List<Item> testGenerateDummieResult() {
@@ -706,7 +698,6 @@ public class Controller {
      * For testing to take the active search result
      *
      * @return the current active search result
-     *
      * @author dipsywong98
      */
     public List<Item> testPeekSearchResult() {

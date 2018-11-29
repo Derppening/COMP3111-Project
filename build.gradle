@@ -43,6 +43,10 @@ dependencies {
     testCompile "org.testfx:testfx-core:4.0.15-alpha"
 }
 
+javadoc {
+    setDestinationDir file("${projectDir}/docs")
+}
+
 jacocoTestReport {
     reports {
         xml.enabled false

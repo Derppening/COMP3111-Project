@@ -21,6 +21,7 @@
 - Basic Task 6: Assume that the "Close" button does not affect the Search History.
 - Basic Task 6: Assume that the "Last Search" action will remove the 2nd-to-last search record.
 - Advanced Task 3: Assume that there are no color requirements on the double-clicked data point
+- Javadocs are generated under `projectRoot/docs`
 
 ## Gantt Chart
 
