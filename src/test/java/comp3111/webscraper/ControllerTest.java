@@ -244,7 +244,10 @@ public class ControllerTest extends ApplicationTest {
         }
 
         assertFalse(controller.itemLastSearch.isDisable());
-        controller.actionLastSearch();
+
+        Platform.runLater(() -> controller.actionLastSearch());
+        WaitForAsyncUtils.waitForFxEvents();
+
         assertTrue(controller.itemLastSearch.isDisable());
 
         assertEquals("ipad", controller.textFieldKeyword.getText());
