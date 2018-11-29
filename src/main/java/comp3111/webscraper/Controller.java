@@ -364,7 +364,6 @@ public class Controller {
         if (items != null) {
             // create new histogram
             barChartHistogram.getData().add(checkFrequency(items));
-
             barChartHistogram.getData().forEach(s1 -> s1.getData().forEach(data1 -> data1.getNode().setStyle("-fx-bar-fill: orange")));
 
             barChartHistogram.getData().forEach(s ->
