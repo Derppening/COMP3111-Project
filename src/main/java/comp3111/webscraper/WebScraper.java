@@ -165,7 +165,7 @@ public class WebScraper {
      * @param keyword - the keyword you want to search
      * @return A list of Item that has found. A zero size list is return if nothing is found. Null if any exception (e.g. no connectivity)
      * @throws UnsupportedEncodingException if UTF-8 encoding is not supported.
-     *
+     * 
      * @author dipsywong98
      */
     private List<Item> oldScrape(String keyword) throws UnsupportedEncodingException {
@@ -224,7 +224,7 @@ public class WebScraper {
                     item.setUrl(itemAnchor.getHrefAttribute());
                     item.setTime(DATE_TIME_FMT.parse(itemTime.getAttribute("datetime"), Instant::from));
 
-                    item.setPrice(new Double(itemPrice.replace("$", "")));
+                    item.setPrice(Double.parseDouble(itemPrice.replace("$", "")));
                     item.setPortal("craigslist");
 
                     result.add(item);
