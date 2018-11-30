@@ -244,7 +244,10 @@ public class ControllerTest extends ApplicationTest {
         }
 
         assertFalse(controller.itemLastSearch.isDisable());
-        controller.actionLastSearch();
+
+        Platform.runLater(() -> controller.actionLastSearch());
+        WaitForAsyncUtils.waitForFxEvents();
+
         assertTrue(controller.itemLastSearch.isDisable());
 
         assertEquals("ipad", controller.textFieldKeyword.getText());
@@ -255,4 +258,51 @@ public class ControllerTest extends ApplicationTest {
     public void testDisplayTeamInfo() {
         Platform.runLater(() -> controller.actionDisplayTeamInfo());
     }
+
+    @Test
+    public void testDisplayHistogram() {
+        controller.textFieldKeyword.setText("iphone");
+        clickOn("#buttonGo");
+        clickOn("#distributionTab");
+        assertTrue(controller.barChartHistogram.getData().size() != 0);
+        assertTrue(controller.barChartHistogram.getData().get(0).getData().size() == 10);
+    }
+
+    @Test
+    public void testEmptyHistogram() {
+        controller.textFieldKeyword.setText("");
+        clickOn("#buttonGo");
+        clickOn("#distributionTab");
+
+        assertTrue(controller.barChartHistogram.getData().size() == 0);
+    }
+
+    @Test
+    public void testUpdateHistogram() {
+        controller.textFieldKeyword.setText("iphone");
+        clickOn("#buttonGo");
+        clickOn("#distributionTab");
+        String title = controller.barChartHistogram.getTitle();
+
+        controller.textFieldKeyword.setText("ipad");
+        clickOn("#buttonGo");
+        clickOn("#distributionTab");
+
+        assertTrue(controller.barChartHistogram.getTitle() != title);
+    }
+
+    @Test
+    public void testDoubleClickHistogram() {
+        controller.textFieldKeyword.setText("iphone");
+        clickOn("#buttonGo");
+        String text = controller.textAreaConsole.getText();
+
+        clickOn("#distributionTab");
+        Node n = controller.barChartHistogram.getData().get(0).getData().get(0).getNode();
+        doubleClickOn(n);
+
+        assertTrue(controller.barChartHistogram.getData().get(0).getData().get(0).getNode().getStyle().length() != 0);
+        assertNotEquals(text, controller.textAreaConsole.getText());
+    }
 }
+

@@ -10,8 +10,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.chart.AreaChart;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
@@ -25,16 +24,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.Math;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -70,6 +67,18 @@ public class Controller {
         }
         SEVEN_DAY_INSTANTS = Collections.unmodifiableList(instants);
     }
+
+    /**
+     * FXML element for DistributionTab.
+     */
+    @FXML
+    public Tab distributionTab;
+
+    /**
+     * FXML element for the histogram in the Distribution Tab.
+     */
+    @FXML
+    public BarChart<String, Number> barChartHistogram;
 
     /**
      * FXML element for TrendTab.
@@ -164,8 +173,8 @@ public class Controller {
          * Handles "Changed" events from tab change.
          *
          * @param observable Value which was changed.
-         * @param oldValue Originally focused tab.
-         * @param newValue New focused tab.
+         * @param oldValue   Originally focused tab.
+         * @param newValue   New focused tab.
          */
         @Override
         public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
@@ -186,7 +195,6 @@ public class Controller {
      * Sets the reference of the host application.
      *
      * @param app Current instance of {@link javafx.application.Application}.
-     *
      * @author Derppening
      */
     void setHostApplication(@NotNull Application app) {
@@ -195,7 +203,7 @@ public class Controller {
 
     /**
      * @author Derppening
-     *
+     * <p>
      * Default initializer.
      */
     @FXML
@@ -242,12 +250,18 @@ public class Controller {
 
     /**
      * Called when the search button is pressed.
+     *
+     * @author kevinCrylz
      */
     @FXML
     public void actionSearch() {
         System.out.println("actionSearch: " + textFieldKeyword.getText());
 
         List<Item> result = scraper.scrape(textFieldKeyword.getText());
+
+        //Building histogram
+        updateHistogram(textFieldKeyword.getText(), result);
+
         if (result != null) {
             SearchRecord.push(textFieldKeyword.getText(), result);
 
@@ -275,6 +289,9 @@ public class Controller {
         itemLastSearch.setDisable(true);
         textFieldKeyword.setText(lastSearch.getKeyword());
         textAreaConsole.setText(serializeItems(lastSearch.getItems()));
+
+        updateHistogram(lastSearch.getKeyword(), lastSearch.getItems());
+        searchRecordComboBox.getSelectionModel().select(lastSearch.getKeyword());
 
         System.out.println("Loaded query \"" + lastSearch.getKeyword() + "\" from " + lastSearch.getTimeSaved().toString());
     }
@@ -326,13 +343,101 @@ public class Controller {
         areaChart.getData().forEach(s -> setAreaChartColors(s.getData(), null));
     }
 
+
+    /**
+     * Called when there is a new search to update the distribution tab.
+     *
+     * @param keyword search keyword
+     * @param items   List containing returned items of search result
+     * @author kevinCrylz
+     */
+    private void updateHistogram(String keyword, List<Item> items) {
+        barChartHistogram.setTitle("The selling price of " + keyword);
+        barChartHistogram.getXAxis().setLabel("Price Range");
+        barChartHistogram.getYAxis().setLabel("Frequency");
+
+        barChartHistogram.setAnimated(false);
+        //barChartHistogram.setBarGap(0);
+        //barChartHistogram.setCategoryGap(0);
+
+        barChartHistogram.getData().clear();
+
+        if (items != null) {
+            // create new histogram
+            barChartHistogram.getData().add(checkFrequency(items));
+            barChartHistogram.getData().forEach(s1 -> s1.getData().forEach(data1 -> data1.getNode().setStyle("-fx-bar-fill: orange")));
+
+            barChartHistogram.getData().forEach(s ->
+                    s.getData().forEach(data ->
+                            data.getNode().setOnMouseClicked(event -> {
+                                if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
+                                    double lowPrice = Double.valueOf(data.getXValue().split("-")[0]);
+                                    double highPrice = Double.valueOf(data.getXValue().split("-")[1]);
+
+                                    clearConsole();
+
+                                    if (lowPrice != highPrice) {
+                                        List<Item> filteredItems = items.parallelStream()
+                                                .filter(item -> item.getPrice() >= lowPrice)
+                                                .filter(item -> item.getPrice() < highPrice)
+                                                .collect(Collectors.toList());
+
+                                        textAreaConsole.setText(serializeItems(filteredItems));
+                                    } else {
+                                        textAreaConsole.setText(serializeItems(items));
+                                    }
+
+                                    barChartHistogram.getData().forEach(s1 -> s1.getData().forEach(data1 -> data1.getNode().setStyle("-fx-bar-fill: orange")));
+                                    data.getNode().setStyle("-fx-bar-fill: #e5671d");
+                                }
+                            })));
+        }
+    }
+
+    /**
+     * Helper function for categorizing {@link Item} into ten price range.
+     *
+     * @param items Items returned from search
+     * @return {@link XYChart.Series} containing a list of frequencies of ten price range.
+     * @author kevinCrylz
+     */
+    private XYChart.Series<String, Number> checkFrequency(List<Item> items) {
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+
+        double lowPrice = Math.round((items.get(0).getPrice() - 5) / 10.0) * 10;
+        double highPrice = Math.round((items.get(items.size() - 1).getPrice() + 5) / 10.0) * 10;
+        double d = (highPrice - lowPrice) / 10;
+
+        if (lowPrice == highPrice) {
+            series.getData().add(new XYChart.Data<>("" + lowPrice + "-" + highPrice, items.size()));
+            return series;
+        }
+
+        int[] cnt_data = new int[10];
+        double price;
+
+        for (Item item : items) {
+            price = item.getPrice();
+            for (int i = 1; i <= 10; i++) {
+                if (price > highPrice - d * i) {
+                    cnt_data[10 - i] += 1;
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0; i < 10; i++)
+            series.getData().add(new XYChart.Data<>("" + (lowPrice + d * i) + "-" + (lowPrice + d * (i + 1)), cnt_data[i]));
+
+        return series;
+    }
+
     /**
      * Helper function for mapping a {@link SearchRecord} data into {@link XYChart.Series} for displaying
      * on the chart.
      *
      * @param record Record to map into a series.
      * @return {@link XYChart.Series} containing a list of average prices per day.
-     *
      * @author Derppening
      */
     private XYChart.Series<String, Double> mapDataToSeries(SearchRecord record) {
@@ -363,8 +468,7 @@ public class Controller {
      * Set the color of the area chart.
      *
      * @param series The series of data points to format.
-     * @param hData The data point to highlight.
-     *
+     * @param hData  The data point to highlight.
      * @author Derppening
      */
     private void setAreaChartColors(List<XYChart.Data<String, Double>> series, XYChart.Data<String, Double> hData) {
@@ -379,7 +483,6 @@ public class Controller {
      *
      * @param items List of items to serialize.
      * @return Items serialized in the format "$title\t$price\t$portal\t$url".
-     *
      * @author Derppening, dipsywong98
      */
     private static String serializeItems(List<Item> items) {
@@ -426,7 +529,6 @@ public class Controller {
      * append the str to console
      *
      * @param str the appended string
-     *
      * @author dipsywong98
      */
     private void printConsole(String str) {
@@ -469,7 +571,6 @@ public class Controller {
      *
      * @param file .3111 file target to save to
      * @throws IOException if the file cannot be saved
-     *
      * @author dipsywong98
      */
     public void saveFile(File file) throws IOException {
@@ -514,7 +615,6 @@ public class Controller {
      *
      * @param file the .3111 file to load
      * @throws IOException if an I/O error occurred while reading the file.
-     *
      * @author dipsywong98
      */
     public void openFile(File file) throws IOException {
@@ -540,7 +640,6 @@ public class Controller {
      * @param file file to read
      * @return string in file
      * @throws IOException if an I/O error occurred while reading the file.
-     *
      * @author dipsywong98
      */
     private String readFile(File file) throws IOException {
@@ -560,7 +659,6 @@ public class Controller {
      * For testing advance 2, create some result
      *
      * @return the new search result
-     *
      * @author dipsywong98
      */
     public List<Item> testGenerateDummieResult() {
@@ -600,7 +698,6 @@ public class Controller {
      * For testing to take the active search result
      *
      * @return the current active search result
-     *
      * @author dipsywong98
      */
     public List<Item> testPeekSearchResult() {
