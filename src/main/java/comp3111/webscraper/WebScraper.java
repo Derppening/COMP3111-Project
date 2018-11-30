@@ -232,7 +232,7 @@ public class WebScraper {
 
                 pageAnchor = page.getFirstByXPath("//a[@class='button next']");
                 page = client.getPage(searchUrl.substring(0, searchUrl.indexOf("/search")) + pageAnchor.getHrefAttribute());
-            } while (pageAnchor.getHrefAttribute().length() != 0 && cnt_page <3);
+            } while (pageAnchor.getHrefAttribute().length() != 0);
             client.close();
             return result;
         } catch (Exception e) {
